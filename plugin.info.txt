@@ -1,7 +1,7 @@
 base   dwtimeline
 author saggi
 email  saggi@gmx.de
-date   2022-06-27
+date   2022-06-28
 name   dwtimeline plugin
 desc   Provide a DokuWiki styled timeline
 url    http://www.dokuwiki.org/plugin:dwtimeline
