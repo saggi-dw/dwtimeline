@@ -6,3 +6,4 @@
  */
 
 $lang['direction'] = 'On which side should the timeline start (left,right)?';
+$lang['align'] = 'Choose the Standard-Alignment (Vertical[vert], Horizontal[horz])?';

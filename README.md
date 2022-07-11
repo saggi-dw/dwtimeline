@@ -2,7 +2,7 @@
 
 dwtimeline plugin for DokuWiki
 
-Provide a DokuWiki styled timeline
+Provides a DokuWiki styled timeline
 
 All documentation for this plugin can be found at
 http://www.dokuwiki.org/plugin:dwtimeline
