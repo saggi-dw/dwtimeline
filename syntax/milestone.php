@@ -5,6 +5,10 @@
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  saggi <saggi@gmx.de>
  */
+
+// must be run within Dokuwiki
+if(!defined('DOKU_INC')) die();
+
 class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugin
 {
     /** @inheritDoc */
@@ -22,7 +26,7 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
     /** @inheritDoc */
     public function getSort()
     {
-        return 180;
+        return 320;
     }
     
     /**
@@ -38,7 +42,7 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
      */
     public function connectTo($mode)
     {
-        $this->Lexer->addEntryPattern('<milestone\b.*?>',$mode,'plugin_dwtimeline_milestone');/* (?=.*?</milestone>) */
+        $this->Lexer->addEntryPattern('<milestone\b.*?>',$mode,'plugin_dwtimeline_milestone');
     }
     
     /**
@@ -64,8 +68,9 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
             case DOKU_LEXER_ENTER :
                 $match = trim(substr($match, 10,-1));// returns match between <milestone(10) and >(-1)
                 $data = helper_plugin_dwtimeline::getTitleMatches($match, 'title');
+                global $align;
+                $data['align'] = $align;
                 return array($state,$data);
-
             case DOKU_LEXER_UNMATCHED :  
                 return array($state,$match);
             case DOKU_LEXER_EXIT :
@@ -90,20 +95,20 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
             list($state,$indata) = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER :
-                        $renderer->doc .= '<div class="container '.$direction.'">'. DOKU_LF;
+                        $renderer->doc .= '<div class="container-'.$indata['align'].' '.$direction.'"'.$indata['data'].$indata['backcolor'].'>'. DOKU_LF;
                         $renderer->doc .= '<div class="content">'. DOKU_LF;
-                        if ($indata['title']) {
-                            if ($indata['link']) {
-                               $renderer->doc .= '<h2>'.$this->render_text('[['.$indata['link'].'|'.$indata['title'].']]').'</h2>'. DOKU_LF;
+                        if (isset($indata['title'])) {
+                            if (isset($indata['link'])) {
+                               $renderer->doc .= '<div class="mstitle">'.$this->render_text('[['.$indata['link'].'|'.$indata['title'].']]').'</div>'. DOKU_LF;
                             } else {
-                                $renderer->doc .= '<h2>'.$indata['title'].'</h2>'. DOKU_LF;
+                                $renderer->doc .= '<div class="mstitle">'.$indata['title'].'</div>'. DOKU_LF;
                             }
                         }
-                        if ($indata['description']) {$renderer->doc .= '<h3>'.$indata['description'].'</h3>'. DOKU_LF;}
+                        if (isset($indata['description'])) {$renderer->doc .= '<div class="msdesc">'.$indata['description'].'</div>'. DOKU_LF;}
                     break;
                     
                 case DOKU_LEXER_UNMATCHED :
-                    $renderer->doc .= $renderer->_xmlEntities($indata);
+                    $renderer->doc .= $renderer->cdata($indata);
                     break;
                 case DOKU_LEXER_EXIT :
                     $renderer->doc .= '</div>'. DOKU_LF;
