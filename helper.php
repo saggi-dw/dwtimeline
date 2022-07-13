@@ -25,11 +25,11 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
      */
     public static function getDirection($direction) 
     {
-        if($direction === 'right'){
-            $direction = 'left';
+        if($direction === 'tl-right'){
+            $direction = 'tl-left';
             }
         else {
-                $direction = 'right';
+                $direction = 'tl-right';
             }
         return $direction;
     }
@@ -123,7 +123,7 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
             "SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue",
             "Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen"];
 
-        if (in_array($color, $COLOR_NAMES)) {
+        if (in_array(strtolower($color), array_map('strtolower',$COLOR_NAMES))) {
             return trim($color);
         }
         

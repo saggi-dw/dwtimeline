@@ -93,15 +93,15 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
     {
         if ($mode == 'xhtml') {
             global $direction;
-            if (!$direction) {$direction=$this->getConf('direction');}
+            if (!$direction) {$direction='tl-'.$this->getConf('direction');}
             list($state,$indata) = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER :
                     if ($indata['align'] === 'horz'){$renderer->doc .= '<div class="timeline-'.$indata['align'].'-line"></div>'. DOKU_LF;};
                     $renderer->doc .= '<div class="timeline-'.$indata['align'].'">'. DOKU_LF;
                     if (isset($indata['title']) or isset($indata['description'])) {
-                        $renderer->doc .= '<div class="container-'.$indata['align'].' top">'. DOKU_LF;
-                        $renderer->doc .= '<div class="content">'. DOKU_LF;
+                        $renderer->doc .= '<div class="container-'.$indata['align'].' tl-top">'. DOKU_LF;
+                        $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
                         if (isset($indata['title'])) {$renderer->doc .= '<div class="tltitle">'.$indata['title'].'</div>'. DOKU_LF;}
                         if (isset($indata['description'])) {$renderer->doc .= '<p>'.$indata['description'].'</p>'. DOKU_LF;}
                         $renderer->doc .= '</div>'. DOKU_LF;
@@ -113,15 +113,15 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
                     break;
                 case DOKU_LEXER_EXIT :
                     if (isset($indata['title']) or isset($indata['description'])) {
-                        $renderer->doc .= '<div class="container-'.$indata['align'].' bottom">'. DOKU_LF;
-                        $renderer->doc .= '<div class="content">'. DOKU_LF;
+                        $renderer->doc .= '<div class="container-'.$indata['align'].' tl-bottom">'. DOKU_LF;
+                        $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
                         if (isset($indata['title'])) {$renderer->doc .= '<div class="tltitle">'.$indata['title'].'</div>'. DOKU_LF;}
                         if (isset($indata['description'])) {$renderer->doc .= '<p>'.$indata['description'].'</p>'. DOKU_LF;}
                         $renderer->doc .= '</div>'. DOKU_LF;
                         $renderer->doc .= '</div>'. DOKU_LF;
                     }
                     $renderer->doc .= '</div>'. DOKU_LF;
-                    $direction=$this->getConf('direction');//Reset direction
+                    $direction='tl-'.$this->getConf('direction');//Reset direction
                     break;
             }
             return true;        

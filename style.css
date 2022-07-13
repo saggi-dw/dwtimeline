@@ -1,75 +1,73 @@
-* {
-  box-sizing: border-box;
-}
-
 /* The actual timeline (the vertical ruler) */
 .timeline-vert {
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* The actual timeline (the vertical ruler) */
 .timeline-vert::after {
-  content: '';
-  position: absolute;
-  width: 6px;
-  background-color: @ini_text;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  margin-left: -3px;
+    content: '';
+    position: absolute;
+    width: 6px;
+    background-color: @ini_text;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -3px;
 }
 
 /* Container around content */
 .container-vert {
-  padding: 10px 40px;
-  position: relative;
-  background-color: inherit;
-  width: 50%;
-  margin-left: unset;
-  margin-right: unset;
+    padding: 10px 40px;
+    position: relative;
+    background-color: inherit;
+    width: 50%;
+    box-sizing: border-box;
+    margin-left: unset;
+    margin-right: unset;
 }
 
 /* The circles on the timeline */
-.container-vert.left::before, .container-vert.right::before {
-  content: attr(data-point);
-  display: inline-block;
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  right: -17px;
-  font-size:1.2em;
-  font-weight: unset;
-  text-align: center;
-  line-height: 1.5em;
-  background-color: @ini_background;
-  border: 4px solid @ini_link;
-  top: 15px;
-  border-radius: 50%;
-  z-index: 1;
-  box-sizing: unset;
-  color: @ini_link;
+.container-vert.tl-left::before, .container-vert.tl-right::before {
+    content: attr(data-point);
+    display: inline-block;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    right: -17px;
+    font-size:1.2em;
+    font-weight: unset;
+    text-align: center;
+    line-height: 1.5em;
+    background-color: @ini_background;
+    border: 4px solid @ini_link;
+    top: 15px;
+    border-radius: 50%;
+    z-index: 1;
+    box-sizing: unset;
+    color: @ini_link;
 }
 
 /* invert color on timeline point on hover */
-.container-vert.left:hover::before, .container-vert.right:hover::before {
-  background-color: @ini_link;
-  color: @ini_background;
+.container-vert.tl-left:hover::before, .container-vert.tl-right:hover::before {
+    background-color: @ini_link;
+    color: @ini_background;
 }
 
 /* Place the container to the left */
-.container-vert.left {
-  left: 0;
+.container-vert.tl-left {
+    left: 0;
 }
 
 /* Place the container to the right */
-.container-vert.right {
-  left: 50%;
+.container-vert.tl-right {
+    left: 50%;
 }
 
 /* Place the container to center */
-.container-vert.top, .container-vert.bottom {
+.container-vert.tl-top, .container-vert.tl-bottom {
     padding: 0;
     margin-left: auto;
     margin-right: auto;
@@ -81,214 +79,217 @@
 }
 
 /* Add arrows to the top container (pointing down) */
-.container-vert.top::after {
-  content: '';
-  height: 0;
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  width: 0;
-  margin-left: -10px;
-  z-index: 1;
-  border: medium solid @ini_background_neu;
-  border-width: 10px 10px 0px 10px;
-  border-color: @ini_background_neu transparent transparent transparent;
+.container-vert.tl-top::after {
+    content: '';
+    height: 0;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 0;
+    margin-left: -10px;
+    z-index: 1;
+    border: medium solid @ini_background_neu;
+    border-width: 10px 10px 0px 10px;
+    border-color: @ini_background_neu transparent transparent transparent;
 }
 
 /* Add arrows to the bottom container (pointing up) */
-.container-vert.bottom::after {
-  content: '';
-  height: 0;
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  width: 0;
-  margin-left: -10px;
-  z-index: 1;
-  border: medium solid @ini_background_neu;
-  border-width: 0px 10px 10px 10px;
-  border-color: transparent transparent @ini_background_neu transparent;
+.container-vert.tl-bottom::after {
+    content: '';
+    height: 0;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 0;
+    margin-left: -10px;
+    z-index: 1;
+    border: medium solid @ini_background_neu;
+    border-width: 0px 10px 10px 10px;
+    border-color: transparent transparent @ini_background_neu transparent;
 }
 
 
 /* Add arrows to the left container (pointing right) */
-.container-vert.left::after {
-  content: '';
-  height: 0;
-  position: absolute;
-  top: 22px;
-  width: 0;
-  z-index: 1;
-  right: 30px;
-  border: medium solid @ini_background_neu;
-  border-width: 10px 0 10px 10px;
-  border-color: transparent transparent transparent @ini_background_neu;
+.container-vert.tl-left::after {
+    content: '';
+    height: 0;
+    position: absolute;
+    top: 22px;
+    width: 0;
+    z-index: 1;
+    right: 30px;
+    border: medium solid @ini_background_neu;
+    border-width: 10px 0 10px 10px;
+    border-color: transparent transparent transparent @ini_background_neu;
 }
 
 /* Add arrows to the right container (pointing left) */
-.container-vert.right::after {
-  content: '';
-  height: 0;
-  position: absolute;
-  top: 22px;
-  width: 0;
-  z-index: 1;
-  left: 30px;
-  border: medium solid white;
-  border-width: 10px 10px 10px 0;
-  border-color: transparent @ini_background_neu transparent transparent;
+.container-vert.tl-right::after {
+    content: '';
+    height: 0;
+    position: absolute;
+    top: 22px;
+    width: 0;
+    z-index: 1;
+    left: 30px;
+    border: medium solid white;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent @ini_background_neu transparent transparent;
 }
 
 /* Fix the circle for containers on the right side */
-.container-vert.right::before {
-  left: -16px;
+.container-vert.tl-right::before {
+    left: -16px;
 }
 
 /* The actual content */
-.content {
-  padding: 10px 10px;
-  background-color: @ini_background_neu;
-  position: relative;
-  border-radius: 6px;
-  color: @ini_text;
-  white-space: normal;
-  text-align: unset;
+.tlcontent {
+    padding: 10px 10px;
+    background-color: @ini_background_neu;
+    position: relative;
+    border-radius: 6px;
+    color: @ini_text;
+    white-space: normal;
+    text-align: unset;
 }
 
 /* description of milestone, removed <h3> */
 .msdesc {
-  font-weight: bold;
-  font-size: 1.1em;
-  padding: 5px;
-  text-align: center;
-  color: @ini_text;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 5px;
+    text-align: center;
+    color: @ini_text;
 }
 
 /* Titles of timeline and milestones, removed <h2> */
 .mstitle, .tltitle {
-  font-weight: bold;
-  font-size: 1.6em;
-  padding: 5px;
-  color: @ini_text;
+    font-weight: bold;
+    font-size: 1.4em;
+    padding: 5px;
+    color: @ini_text;
 }
 
 /* fix for space arround paragraph */
 .mstitle>p {
-margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 /* set the Header to left or */
-.container-vert.left .content .mstitle {
-  text-align: right;    
+.container-vert.tl-left .tlcontent .mstitle {
+    text-align: right;    
 }
 /* right */
-.container-vert.right .content .mstitle {
-  text-align: left;    
+.container-vert.tl-right .tlcontent .mstitle {
+    text-align: left;    
 }
 
 /* Horizontal TimeLine */
 .timeline-horz {
-  white-space: nowrap;
-  overflow-x: scroll;
-  padding: 30px 0 10px 0;
-  position: relative;
-  margin: 0 auto;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow-x: scroll;
+    padding: 30px 0 10px 0;
+    position: relative;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 /* The actual timeline (the horizontal ruler) */
 .timeline-horz-line {
-  height: 4px;
-  background: @ini_background_neu;
-  width: 100%;
-  position: relative;
-  top: 16px;
+    height: 4px;
+    background: @ini_background_neu;
+    width: 100%;
+    position: relative;
+    top: 16px;
 }
 
 /* a smaller bottom container */
 .container-horz {
-  display: inline-block;
-  vertical-align: top;
-  padding: 10px 10px 10px 10px;
-  position: relative;
-  background-color: inherit;
-  width: 33%;
-  margin-left: -2px;
-  margin-right: -2px;
-  text-align: center;
+    display: inline-block;
+    vertical-align: top;
+    padding: 10px 10px 10px 10px;
+    position: relative;
+    background-color: inherit;
+    width: 33%;
+    margin-left: -2px;
+    margin-right: -2px;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 /* The circles on the timeline at top of container*/
 .container-horz::before {
-  content: attr(data-point);  
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  font-size:1em;
-  font-weight: unset;
-  text-align: center;
-  line-height: 20px;
-  background-color: @ini_background;
-  border: 3px solid @ini_link;
-  color: @ini_link;
-  top: -30px;
-  left: 50%;
-  margin-left: -14px;
-  border-radius: 50%;
-  z-index: 1;
-  box-sizing: unset;
+    content: attr(data-point);  
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size:1em;
+    font-weight: unset;
+    text-align: center;
+    line-height: 20px;
+    background-color: @ini_background;
+    border: 3px solid @ini_link;
+    color: @ini_link;
+    top: -30px;
+    left: 50%;
+    margin-left: -14px;
+    border-radius: 50%;
+    z-index: 1;
+    box-sizing: unset;
 }
 
 /* invert color on timeline point on hover */
 .container-horz:hover::before {
-  background-color: @ini_link;
-  color: @ini_background;
+    background-color: @ini_link;
+    color: @ini_background;
 }
 
 /* Add arrows to the container (pointing up) */
 .container-horz::after {
-  content: '';
-  height: 0;
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  width: 0;
-  margin-left: -10px;
-  margin-bottom: -10px;
-  z-index: 1;
-  border: medium solid @ini_background_neu;
-  border-width: 0px 10px 10px 10px;
-  border-color: transparent transparent @ini_background_neu transparent;
+    content: '';
+    height: 0;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 0;
+    margin-left: -10px;
+    margin-bottom: -10px;
+    z-index: 1;
+    border: medium solid @ini_background_neu;
+    border-width: 0px 10px 10px 10px;
+    border-color: transparent transparent @ini_background_neu transparent;
 }
 
 /* Media queries - Responsive timeline on screens less than 600px wide */
 @media screen and (max-width: 600px) {
-  /* Place the timelime to the left */
-  .timeline::after {
-  left: 31px;
-  }
-  
-  /* Full-width containers */
-  .container {
-  width: 100%;
-  padding-left: 70px;
-  padding-right: 25px;
-  }
-  
-  /* Make sure that all arrows are pointing leftwards */
-  .container::before {
-  left: 60px;
-  border: medium solid @ini_background_alt;
-  border-width: 10px 10px 10px 0;
-  border-color: transparent @ini_background_alt transparent transparent;
-  }
-
-  /* Make sure all circles are at the same spot */
-  .left::after, .right::after {
-  left: 15px;
-  }
-  
-  /* Make all right containers behave like the left ones */
-  .right {
-  left: 0%;
-  }
+    /* Place the timelime to the left */
+    .timeline::after {
+        left: 31px;
+    }
+      
+    /* Full-width containers */
+    .container-vert {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
+    }
+      
+    /* Make sure that all arrows are pointing leftwards */
+    .container-vert::before {
+        left: 60px;
+        border: medium solid @ini_background_alt;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent @ini_background_alt transparent transparent;
+    }
+    
+    /* Make sure all circles are at the same spot */
+    .tl-left::after, .tl-right::after {
+        left: 15px;
+    }
+      
+    /* Make all right containers behave like the left ones */
+    .tl-right {
+        left: 0%;
+    }
 }

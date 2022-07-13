@@ -33,10 +33,11 @@ class action_plugin_dwtimeline extends DokuWiki_Action_Plugin {
     }
     
     private function buildSkeleton() {
-       $skeleton .= '<dwtimeline title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
-       $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
-       $skeleton .= 'data="'.$this->getLang('ms-data').'">\n';
-       return $skeleton;
+        $skeleton = '';
+        $skeleton .= '<dwtimeline title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
+        $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
+        $skeleton .= 'data="'.$this->getLang('ms-data').'">\n';
+        return $skeleton;
     }
             
     

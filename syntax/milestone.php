@@ -42,7 +42,9 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
      */
     public function connectTo($mode)
     {
-        $this->Lexer->addEntryPattern('<milestone\b.*?>',$mode,'plugin_dwtimeline_milestone');
+        if ($mode == "plugin_dwtimeline_timeline") {
+            $this->Lexer->addEntryPattern('<milestone\b.*?>',$mode,'plugin_dwtimeline_milestone');
+        }
     }
     
     /**
@@ -89,24 +91,22 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
     public function render($mode, Doku_Renderer $renderer, $data)
     {
         if ($mode == 'xhtml') {
-
             global $direction;
-            if (!$direction) {$direction=$this->getConf('direction');}
+            if (!$direction) {$direction='tl-'.$this->getConf('direction');}
             list($state,$indata) = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER :
-                        $renderer->doc .= '<div class="container-'.$indata['align'].' '.$direction.'"'.$indata['data'].$indata['backcolor'].'>'. DOKU_LF;
-                        $renderer->doc .= '<div class="content">'. DOKU_LF;
-                        if (isset($indata['title'])) {
-                            if (isset($indata['link'])) {
-                               $renderer->doc .= '<div class="mstitle">'.$this->render_text('[['.$indata['link'].'|'.$indata['title'].']]').'</div>'. DOKU_LF;
-                            } else {
-                                $renderer->doc .= '<div class="mstitle">'.$indata['title'].'</div>'. DOKU_LF;
-                            }
+                    $renderer->doc .= '<div class="container-'.$indata['align'].' '.$direction.'"'.$indata['data'].$indata['backcolor'].'>'. DOKU_LF;
+                    $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
+                    if (isset($indata['title'])) {
+                        if (isset($indata['link'])) {
+                            $renderer->doc .= '<div class="mstitle">'.$this->render_text('[['.$indata['link'].'|'.$indata['title'].']]').'</div>'. DOKU_LF;
+                        } else {
+                            $renderer->doc .= '<div class="mstitle">'.$indata['title'].'</div>'. DOKU_LF;
                         }
-                        if (isset($indata['description'])) {$renderer->doc .= '<div class="msdesc">'.$indata['description'].'</div>'. DOKU_LF;}
+                    }
+                    if (isset($indata['description'])) {$renderer->doc .= '<div class="msdesc">'.$indata['description'].'</div>'. DOKU_LF;}
                     break;
-                    
                 case DOKU_LEXER_UNMATCHED :
                     $renderer->doc .= $renderer->cdata($indata);
                     break;
