@@ -22,21 +22,53 @@ class action_plugin_dwtimeline extends DokuWiki_Action_Plugin {
      * Inserts the toolbar button
      */
     public function insert_button(Doku_Event $event, $param) {
+
         $event->data[] = array (
-            'type' => 'format',
-            'title' => $this->getLang('tl-button'),
-            'icon' => '../../plugins/dwtimeline/icons/timeline_marker.png',
-            'open' => $this->buildSkeleton(),
-            'sample' => $this->getLang('ms-content'),
-            'close' => '\n</milestone>\n</dwtimeline title="'.$this->getLang('tl-end').'">',
+            'type' => 'picker',
+            'title' => $this->getLang('tl-picker'),
+            'icon' => '../../plugins/dwtimeline/icons/timeline_picker.png',
+            'list' => array(
+                array(
+                    'type' => 'format',
+                    'title' => $this->getLang('tl-button'), 
+                    'icon' => '../../plugins/dwtimeline/icons/timeline_marker.png',
+                    'open' => $this->buildSkeleton('complete'),
+                    'sample' => $this->getLang('ms-content'),
+                    'close' => '\n</milestone>\n</dwtimeline title="'.$this->getLang('tl-end').'">',
+                ),
+                array(
+                    'type' => 'format',
+                    'title' => $this->getLang('ms-button'),
+                    'icon' => '../../plugins/dwtimeline/icons/page_white_code.png',
+                    'open' => $this->buildSkeleton('milestone'),
+                    'sample' => $this->getLang('ms-content'),
+                    'close' => '\n</milestone>',
+                ),                
+            )
         );
     }
     
-    private function buildSkeleton() {
+    private function buildSkeleton($skeletontype) {
         $skeleton = '';
-        $skeleton .= '<dwtimeline title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
-        $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
-        $skeleton .= 'data="'.$this->getLang('ms-data').'">\n';
+        switch ($skeletontype){
+            case 'complete' :
+                $skeleton = '<dwtimeline align="'.$this->getConf('align').'" title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
+                $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
+                $skeleton .= 'data="'.$this->getLang('ms-data').'">\n'.$this->getLang('ms-content').'\n';
+                $skeleton .= '</milestone>\n';
+                $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
+                $skeleton .= 'data="02">\n';
+                break;
+            case 'milestone' :
+                $skeleton = '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
+                $skeleton .= 'data="'.$this->getLang('ms-data').'" backcolor="'.$this->getLang('ms-backcolor').'">\n';
+                break;
+            default :
+                $skeleton = '<dwtimeline title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
+                $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
+                $skeleton .= 'data="'.$this->getLang('ms-data').'">\n';
+                break;            
+        }
         return $skeleton;
     }
             

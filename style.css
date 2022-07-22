@@ -1,3 +1,7 @@
+.dwtimeline {
+    display: flow-root;
+}
+
 /* The actual timeline (the vertical ruler) */
 .timeline-vert {
     box-sizing: border-box;
