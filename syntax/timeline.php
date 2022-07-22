@@ -27,14 +27,15 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
     /** @inheritDoc */
     public function getSort()
     {
-        return 320;
+        return 400;
     }
     
+  
     /**
      * @return array Things that may be inside the syntax
      */
     function getAllowedTypes() {
-        return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs');
+        return array('plugin_dwtimeline_milestone');
     }
 
     /**
@@ -43,7 +44,7 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
      */
     public function connectTo($mode)
     {
-        $this->Lexer->addEntryPattern('<dwtimeline\b.*?>',$mode,'plugin_dwtimeline_timeline');
+        $this->Lexer->addEntryPattern('<dwtimeline\b.*?>(?=.*?</dwtimeline\b.*?>)',$mode,'plugin_dwtimeline_timeline'); 
     }
     
     /**
@@ -71,6 +72,7 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
                 $align = $this->getConf('align');    
                 $match = trim(substr($match, 11,-1));// returns match between <dwtimeline(11) and >(-1)
                 $data = helper_plugin_dwtimeline::getTitleMatches($match);
+                $align = $data['align'];
                 return array($state,$data);
             case DOKU_LEXER_UNMATCHED :  
                 return array ($state,$match);
@@ -97,13 +99,14 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
             list($state,$indata) = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER :
+                    $renderer->doc .= '<div class="dwtimeline">'. DOKU_LF;
                     if ($indata['align'] === 'horz'){$renderer->doc .= '<div class="timeline-'.$indata['align'].'-line"></div>'. DOKU_LF;};
                     $renderer->doc .= '<div class="timeline-'.$indata['align'].'">'. DOKU_LF;
                     if (isset($indata['title']) or isset($indata['description'])) {
                         $renderer->doc .= '<div class="container-'.$indata['align'].' tl-top">'. DOKU_LF;
                         $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
                         if (isset($indata['title'])) {$renderer->doc .= '<div class="tltitle">'.$indata['title'].'</div>'. DOKU_LF;}
-                        if (isset($indata['description'])) {$renderer->doc .= '<p>'.$indata['description'].'</p>'. DOKU_LF;}
+                        if (isset($indata['description'])) {$renderer->doc .= '<p>'. DOKU_LF.$indata['description']. DOKU_LF.'</p>'. DOKU_LF;}
                         $renderer->doc .= '</div>'. DOKU_LF;
                         $renderer->doc .= '</div>'. DOKU_LF;
                     }
@@ -117,6 +120,7 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
                         $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
                         if (isset($indata['title'])) {$renderer->doc .= '<div class="tltitle">'.$indata['title'].'</div>'. DOKU_LF;}
                         if (isset($indata['description'])) {$renderer->doc .= '<p>'.$indata['description'].'</p>'. DOKU_LF;}
+                        $renderer->doc .= '</div>'. DOKU_LF;
                         $renderer->doc .= '</div>'. DOKU_LF;
                         $renderer->doc .= '</div>'. DOKU_LF;
                     }

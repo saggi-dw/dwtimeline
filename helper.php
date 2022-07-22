@@ -71,7 +71,6 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
                     break;
             }
         }
-        $align = $data['align'];
         return $data;
     }
     

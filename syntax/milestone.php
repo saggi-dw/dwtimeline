@@ -14,7 +14,7 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
     /** @inheritDoc */
     public function getType()
     {
-        return 'substition';
+        return 'plugin_dwtimeline_milestone';
     }
 
     /** @inheritDoc */
@@ -26,7 +26,12 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
     /** @inheritDoc */
     public function getSort()
     {
-        return 320;
+        return 400;
+    }
+    
+    function accepts($mode) {
+        if ($mode == "plugin_dwtimeline_timeline") return true;
+        return parent::accepts($mode);
     }
     
     /**
@@ -42,9 +47,7 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
      */
     public function connectTo($mode)
     {
-        if ($mode == "plugin_dwtimeline_timeline") {
-            $this->Lexer->addEntryPattern('<milestone\b.*?>',$mode,'plugin_dwtimeline_milestone');
-        }
+        $this->Lexer->addEntryPattern('<milestone\b.*?>(?=.*?</milestone>)',$mode,'plugin_dwtimeline_milestone');
     }
     
     /**

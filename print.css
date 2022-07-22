@@ -1,0 +1,108 @@
+.dwtimeline {
+    display: flow-root;
+}
+
+/* The actual timeline (the vertical ruler) */
+.timeline-vert {
+    box-sizing: border-box;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Container around content */
+.container-vert {
+    padding: 10px 40px;
+    position: relative;
+    background-color: inherit;
+    width: 50%;
+    box-sizing: border-box;
+    margin-left: unset;
+    margin-right: unset;
+}
+
+/* Place the container to the left */
+.container-vert.tl-left {
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+/* Place the container to the right */
+.container-vert.tl-right {
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+/* Place the container to center */
+.container-vert.tl-top, .container-vert.tl-bottom {
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30%;
+    z-index: 1;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* The actual content */
+.tlcontent {
+    padding: 10px 10px;
+    background-color: @ini_background_neu;
+    position: relative;
+    border-radius: 6px;
+    color: @ini_text;
+    white-space: normal;
+    text-align: center;
+}
+
+/* description of milestone, removed <h3> */
+.msdesc {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 5px;
+    text-align: center;
+    color: @ini_text;
+}
+
+/* Titles of timeline and milestones, removed <h2> */
+.mstitle, .tltitle {
+    text-align: center; 
+    font-weight: bold;
+    font-size: 1.4em;
+    padding: 5px;
+    color: @ini_text;
+}
+
+/* fix for space arround paragraph */
+.mstitle>p {
+    margin-bottom: 0px;
+    padding-bottom: 0px
+}
+
+/* set the Header to left or */
+.container-vert.tl-left .tlcontent .mstitle {
+    text-align: center;    
+}
+/* right */
+.container-vert.tl-right .tlcontent .mstitle {
+    text-align: center;    
+}
+
+/* a smaller bottom container */
+.container-horz {
+    padding: 10px 40px;
+    position: relative;
+    background-color: inherit;
+    width: 50%;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
