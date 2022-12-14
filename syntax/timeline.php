@@ -6,12 +6,11 @@
  * @author  saggi <saggi@gmx.de>
  */
 
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
+use dokuwiki\plugin\dwtimeline\support\support;
 
 class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
 {
-    
+
     /** @inheritDoc */
     public function getType()
     {
@@ -29,8 +28,8 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
     {
         return 400;
     }
-    
-  
+
+
     /**
      * @return array Things that may be inside the syntax
      */
@@ -40,13 +39,13 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
 
     /**
      * Set the EntryPattern
-     * @param type $mode
+     * @param string $mode
      */
     public function connectTo($mode)
     {
-        $this->Lexer->addEntryPattern('<dwtimeline\b.*?>(?=.*?</dwtimeline\b.*?>)',$mode,'plugin_dwtimeline_timeline'); 
+        $this->Lexer->addEntryPattern('<dwtimeline\b.*?>(?=.*?</dwtimeline\b.*?>)',$mode,'plugin_dwtimeline_timeline');
     }
-    
+
     /**
      * Set the ExitPattern
      */
@@ -57,11 +56,11 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
 
     /**
      * Handle the match
-     * @param type $match
-     * @param type $state
-     * @param type $pos
-     * @param Doku_Handler $handler
-     * @return type
+     * @param string $match The match of the syntax
+     * @param int $state The state of the handler
+     * @param int $pos The position in the document
+     * @param Doku_Handler $handler The handler
+     * @return array Data for the renderer
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
@@ -69,27 +68,28 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
         switch ($state) {
             case DOKU_LEXER_ENTER :
                 global $align;
-                $align = $this->getConf('align');    
+                $align = $this->getConf('align');
                 $match = trim(substr($match, 11,-1));// returns match between <dwtimeline(11) and >(-1)
-                $data = helper_plugin_dwtimeline::getTitleMatches($match);
+                $data = support::getTitleMatches($match);
                 $align = $data['align'];
                 return array($state,$data);
-            case DOKU_LEXER_UNMATCHED :  
+            case DOKU_LEXER_UNMATCHED :
                 return array ($state,$match);
             case DOKU_LEXER_EXIT :
                 $match = trim(substr($match, 12,-1));//returns match between </dwtimeline(12) and >(-1)
-                $data = helper_plugin_dwtimeline::getTitleMatches($match);
+                $data = support::getTitleMatches($match);
                 return array($state,$data);
         }
         return array();
     }
 
     /**
-     * Render Function
-     * @param type $mode
-     * @param Doku_Renderer $renderer
-     * @param type $data
-     * @return boolean
+     * Create output
+     *
+     * @param string $mode string     output format being rendered
+     * @param Doku_Renderer $renderer the current renderer object
+     * @param array $data data created by handler()
+     * @return  boolean                 rendered correctly?
      */
     public function render($mode, Doku_Renderer $renderer, $data)
     {
@@ -128,7 +128,7 @@ class syntax_plugin_dwtimeline_timeline extends \dokuwiki\Extension\SyntaxPlugin
                     $direction='tl-'.$this->getConf('direction');//Reset direction
                     break;
             }
-            return true;        
+            return true;
         }
         return false;
     }

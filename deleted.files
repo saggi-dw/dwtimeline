@@ -3,3 +3,5 @@
 # the files installed
 syntax/helper.php
 syntax/syntax.php
+helper.php
+style.css

@@ -1,29 +1,28 @@
 <?php
 /**
- * DokuWiki Plugin dwtimeline (Helper Component)
+ * DokuWiki Plugin dwtimeline (Global functions)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  saggi <saggi@gmx.de>
  */
 
-// must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
+namespace dokuwiki\plugin\dwtimeline\support;
 
-class helper_plugin_dwtimeline extends DokuWiki_Plugin {
-    
+class support  {
+
     /**
      * Global direction memory
-     * @var type
+     * @var
      */
     protected $direction;
     protected $align;
-    
+
     /**
      * Change the current content of $direction String (left,right)
-     * @param type $direction 
+     * @param  string $direction
      * @return string
      */
-    public static function getDirection($direction) 
+    public static function getDirection($direction)
     {
         if($direction === 'tl-right'){
             $direction = 'tl-left';
@@ -33,14 +32,13 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
             }
         return $direction;
     }
-    
+
     /**
      * Match the options of a entity e.g. <dwtimeline opt1="value1" opt2="value2">
-     * @param type $match the cleaned option String: 'opt1="value1" opt2="value2"'
-     * @param type $boxtitle special identifier for the title-tag
-     * @return type
+     * @param string $match the cleaned option String: 'opt1="value1" opt2="value2"'
+     * @return array
      */
-    public static function getTitleMatches($match)
+    public static function getTitleMatches(string $match)
     {
         $data = [];
         $titles=[];
@@ -58,14 +56,14 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
                     break;
                 case 'data':
                     $data[$opttitle[0]] = ' data-point="'.hsc(substr(trim($opttitle[1],' "'),0,2)).'" ';
-                    break;                
+                    break;
                 case 'align':
                     $data[$opttitle[0]] = self::checkValues(hsc(trim($opttitle[1],' "')),array("horz", "vert") , $align);
                     break;
                 case 'backcolor':
                     if(!self::isValidColor(hsc(trim($opttitle[1],' "')))) { break;}
                     $data[$opttitle[0]] = ' style="background-color:'.self::isValidColor(hsc(trim($opttitle[1],' "'))).';" ';
-                    break;                
+                    break;
                 default :
                     $data[$opttitle[0]] = hsc(trim($opttitle[1],' "'));
                     break;
@@ -73,11 +71,11 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
         }
         return $data;
     }
-    
+
     /**
      * Check and get the link from given DokuWiki Link
-     * @param type $linkToCheck
-     * @return type
+     * @param string $linkToCheck
+     * @return string
      */
     public static function getLink($linkToCheck) {
        $pattern = '/\[\[(?<link>.+?)\]\]/';
@@ -85,15 +83,16 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
        preg_match_all($pattern, $linkToCheck,$links);
        foreach ($links['link'] as $link) {
            return hsc(substr($link,0,strpos($link,'|')));
-       }        
+       }
+       return '';
     }
-    
+
     public static function checkValues($toCheck,$allowed,$standard) {
         if (in_array($toCheck, $allowed, true)) {
             return $toCheck;
         } else {
             return $standard;
-        }        
+        }
     }
 
     /**
@@ -125,17 +124,17 @@ class helper_plugin_dwtimeline extends DokuWiki_Plugin {
         if (in_array(strtolower($color), array_map('strtolower',$COLOR_NAMES))) {
             return trim($color);
         }
-        
+
         $pattern = "/^\s*(
             (\#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}))|        #colorvalue
             (rgb\(([0-9]{1,3}%?,){2}[0-9]{1,3}%?\))     #rgb triplet
             )\s*$/x";
- 
+
         if (preg_match($pattern, $color)) {
             return trim($color);
         }
-        
+
         return false;
     }
-   
+
 }
