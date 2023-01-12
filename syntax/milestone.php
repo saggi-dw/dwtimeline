@@ -99,7 +99,7 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
             list($state,$indata) = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER :
-                    $renderer->doc .= '<div class="container-'.$indata['align'].' '.$direction.'"'.$indata['data'].$indata['backcolor'].'>'. DOKU_LF;
+                    $renderer->doc .= '<div class="container-'.$indata['align'].' '.$direction.'"'.$indata['data'].$indata['style'].'>'. DOKU_LF;
                     $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
                     if (isset($indata['title'])) {
                         if (isset($indata['link'])) {

@@ -1,5 +1,25 @@
 .dwtimeline {
     display: flow-root;
+    /* Timeline markers - Circle: max 2 signs, Ellipsis: 3-4 signs
+    Custom property's:
+    Standard vertical:
+    --4sizewidth: 25px;         Circle 25px   Ellipsis 50px
+    --4sizeright: -17px;        Circle -17px  Ellipsis -29px
+    Small screen vertical:
+    --4sizesmallleft40: 40px;   Circle 40px   Ellipsis 60px
+    --4sizesmallleft50: 50px;   Circle 50px   Ellipsis 70px
+    --4sizesmallleft4: 4px;     Circle 4px    Ellipsis -10px
+    Standard horizontal:
+    --4sizewidthhorz: 20px;     Circle 20px   Ellipsis 50px
+    --4sizerighthorz: -14px;    Circle -14px  Ellipsis -29px
+      */
+    --4sizewidth: 25px;
+    --4sizeright: -17px;
+    --4sizesmallleft40: 40px;
+    --4sizesmallleft50: 50px;
+    --4sizesmallleft4: 4px;
+    --4sizewidthhorz: 20px;
+    --4sizerighthorz: -14px;
 }
 
 /* The actual timeline (the vertical ruler) */
@@ -38,9 +58,9 @@
     content: attr(data-point);
     display: inline-block;
     position: absolute;
-    width: 25px;
+    width: var(--4sizewidth);
     height: 25px;
-    right: -17px;
+    right: var(--4sizeright);
     font-size:1.2em;
     font-weight: unset;
     text-align: center;
@@ -73,12 +93,9 @@
 /* Place the container to center */
 .container-vert.tl-top, .container-vert.tl-bottom {
     padding: 0;
-    margin-left: auto;
-    margin-right: auto;
     width: 30%;
     z-index: 1;
-    margin-bottom: 10px;
-    margin-top: 10px;
+    margin: 10px auto;
     text-align: center;
 }
 
@@ -143,7 +160,7 @@
 
 /* Fix the circle for containers on the right side */
 .container-vert.tl-right::before {
-    left: -16px;
+    left: var(--4sizeright);
 }
 
 /* The actual content */
@@ -176,16 +193,16 @@
 
 /* fix for space arround paragraph */
 .mstitle>p {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 /* set the Header to left or */
 .container-vert.tl-left .tlcontent .mstitle {
-    text-align: right;    
+    text-align: right;
 }
 /* right */
 .container-vert.tl-right .tlcontent .mstitle {
-    text-align: left;    
+    text-align: left;
 }
 
 /* Horizontal TimeLine */
@@ -196,7 +213,6 @@
     padding: 30px 0 10px 0;
     position: relative;
     margin: 0 auto;
-    box-sizing: border-box;
 }
 
 /* The actual timeline (the horizontal ruler) */
@@ -224,9 +240,9 @@
 
 /* The circles on the timeline at top of container*/
 .container-horz::before {
-    content: attr(data-point);  
+    content: attr(data-point);
     position: absolute;
-    width: 20px;
+    width: var(--4sizewidthhorz);
     height: 20px;
     font-size:1em;
     font-weight: unset;
@@ -237,7 +253,7 @@
     color: @ini_link;
     top: -30px;
     left: 50%;
-    margin-left: -14px;
+    margin-left: var(--4sizerighthorz);
     border-radius: 50%;
     z-index: 1;
     box-sizing: unset;
@@ -261,39 +277,101 @@
     margin-bottom: -10px;
     z-index: 1;
     border: medium solid @ini_background_neu;
-    border-width: 0px 10px 10px 10px;
+    border-width: 0 10px 10px 10px;
     border-color: transparent transparent @ini_background_neu transparent;
 }
 
 /* Media queries - Responsive timeline on screens less than 600px wide */
-@media screen and (max-width: 600px) {
-    /* Place the timelime to the left */
+
+@media (max-width: 600px) {
+    /* Place the timeline to the left */
     .timeline::after {
         left: 31px;
     }
-      
+
+    .timeline-vert {
+        left: 0;
+    }
+
     /* Full-width containers */
     .container-vert {
-        width: 100%;
-        padding-left: 70px;
-        padding-right: 25px;
+        width: 100% !important;
+        padding-left: var(--4sizesmallleft50) !important;
+        padding-right: 10px !important;
     }
-      
+
     /* Make sure that all arrows are pointing leftwards */
     .container-vert::before {
-        left: 60px;
+        left: var(--4sizesmallleft40);
         border: medium solid @ini_background_alt;
         border-width: 10px 10px 10px 0;
         border-color: transparent @ini_background_alt transparent transparent;
     }
-    
+
+    .timeline-vert::after {
+        left: 20px;
+    }
+
     /* Make sure all circles are at the same spot */
-    .tl-left::after, .tl-right::after {
+    .container-vert.tl-left::after, .container-vert.tl-right::after {
         left: 15px;
     }
-      
+
     /* Make all right containers behave like the left ones */
-    .tl-right {
-        left: 0%;
+    .container-vert.tl-right {
+        left: 0;
+    }
+
+    .container-vert.tl-left::before {
+        left: var(--4sizesmallleft4);
+    }
+
+    .container-vert.tl-right {
+        left: 0;
+    }
+
+    .container-vert.tl-right::before {
+        left: var(--4sizesmallleft4);
+    }
+
+    .container-vert.tl-right::after {
+        left: var(--4sizesmallleft40);
+    }
+
+    .container-vert.tl-left::after {
+        left: var(--4sizesmallleft40);
+        border: medium solid white;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent #ddd transparent transparent;
+    }
+
+    .container-vert .mstitle {
+        text-align: center !important;
+    }
+
+    .container-vert.tl-top {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .container-vert.tl-top::after {
+        left: 20px;
+    }
+
+    .container-vert.tl-top .tlcontent {
+        border-radius: 6px 6px 6px 6px;
+    }
+
+    .container-vert.tl-bottom {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .tl-bottom .tlcontent {
+        border-radius: 6px 6px 6px 6px;
+    }
+
+    .container-vert.tl-bottom::after {
+        left: 20px;
     }
 }

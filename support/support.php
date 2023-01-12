@@ -19,11 +19,10 @@ class support  {
 
     /**
      * Change the current content of $direction String (left,right)
-     * @param  string $direction
+     * @param string $direction
      * @return string
      */
-    public static function getDirection($direction)
-    {
+    public static function getDirection(string $direction): string {
         if($direction === 'tl-right'){
             $direction = 'tl-left';
             }
@@ -38,14 +37,13 @@ class support  {
      * @param string $match the cleaned option String: 'opt1="value1" opt2="value2"'
      * @return array
      */
-    public static function getTitleMatches(string $match)
-    {
+    public static function getTitleMatches(string $match): array {
         $data = [];
         $titles=[];
         global $align;
         $data['align'] = $align; // Set Standard Alignment
-        $data['backcolor'] = '';
         $data['data'] = '';
+        $data['style'] = ' style="';
         preg_match_all('/(?<title>\w+?\b=".*?")/',$match,$titles);
         foreach ($titles['title'] as $title) {
             $opttitle = explode('=',$title,2);
@@ -55,19 +53,33 @@ class support  {
                     $data['link'] = self::getLink(trim($opttitle[1],' "'));
                     break;
                 case 'data':
-                    $data[$opttitle[0]] = ' data-point="'.hsc(substr(trim($opttitle[1],' "'),0,2)).'" ';
+                    $datapoint = hsc(substr(trim($opttitle[1],' "'),0,4));
+                    $data[$opttitle[0]] = ' data-point="'.$datapoint.'" ';
+                    // Check if more than 2 signs present, if so set style for elliptic timeline marker
+                    if (strlen($datapoint) > 2) {
+                        $data['style'] .= '--4sizewidth: 50px; --4sizeright: -29px; --4sizesmallleft40: 60px; --4sizesmallleft50: 70px; --4sizesmallleft4: -10px; --4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
+                    }
                     break;
                 case 'align':
                     $data[$opttitle[0]] = self::checkValues(hsc(trim($opttitle[1],' "')),array("horz", "vert") , $align);
                     break;
                 case 'backcolor':
                     if(!self::isValidColor(hsc(trim($opttitle[1],' "')))) { break;}
-                    $data[$opttitle[0]] = ' style="background-color:'.self::isValidColor(hsc(trim($opttitle[1],' "'))).';" ';
+                    $data['style'] .= 'background-color:'.self::isValidColor(hsc(trim($opttitle[1],' "'))).'; ';
+                    break;
+                case 'style':
+                    // do not accept custom styles at the moment
                     break;
                 default :
                     $data[$opttitle[0]] = hsc(trim($opttitle[1],' "'));
                     break;
             }
+        }
+        // Clear $data['style'] if no special style needed
+        if ($data['style'] == ' style="') {
+            $data['style'] = '';
+        } else {
+            $data['style'] .= '"';
         }
         return $data;
     }
@@ -77,7 +89,7 @@ class support  {
      * @param string $linkToCheck
      * @return string
      */
-    public static function getLink($linkToCheck) {
+    public static function getLink(string $linkToCheck): string {
        $pattern = '/\[\[(?<link>.+?)\]\]/';
        $links = [];
        preg_match_all($pattern, $linkToCheck,$links);
