@@ -48,25 +48,23 @@ class action_plugin_dwtimeline extends DokuWiki_Action_Plugin {
         );
     }
     
-    private function buildSkeleton($skeletontype) {
+    private function buildSkeleton($skeletontype, $data = null) {
         $skeleton = '';
         switch ($skeletontype){
             case 'complete' :
-                $skeleton = '<dwtimeline align="'.$this->getConf('align').'" title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
-                $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
-                $skeleton .= 'data="'.$this->getLang('ms-data').'">\n'.$this->getLang('ms-content').'\n';
+                $skeleton = '<dwtimeline align="' . $this->getConf('align') . '" title="' . $this->getLang('tl-title') . '" description="' . $this->getLang('tl-desc') . '">\n';
+                $skeleton .= $this->buildSkeleton('milestone');
                 $skeleton .= '</milestone>\n';
-                $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
-                $skeleton .= 'data="02">\n';
+                $skeleton .= $this->buildSkeleton('milestone', '02');
                 break;
             case 'milestone' :
-                $skeleton = '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
-                $skeleton .= 'data="'.$this->getLang('ms-data').'" backcolor="'.$this->getLang('ms-backcolor').'">\n';
+                if (!$data) {$data = $this->getLang('ms-data');}
+                $skeleton = '<milestone title = "' . $this->getLang('ms-title') . '" description="' . $this->getLang('ms-desc') . '" ';
+                $skeleton .= 'data="' . $data . '" backcolor="' . $this->getLang('ms-backcolor') . '">\n';
                 break;
             default :
-                $skeleton = '<dwtimeline title="'.$this->getLang('tl-title').'" description="'.$this->getLang('tl-desc').'">\n';
-                $skeleton .= '<milestone title="'.$this->getLang('ms-title').'" description="'.$this->getLang('ms-desc').'" ';
-                $skeleton .= 'data="'.$this->getLang('ms-data').'">\n';
+                $skeleton = '<dwtimeline title="' . $this->getLang('tl-title') . '" description="' . $this->getLang('tl-desc') . '">\n';
+                $skeleton .= $this->buildSkeleton('milestone');
                 break;            
         }
         return $skeleton;

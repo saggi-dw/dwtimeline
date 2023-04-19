@@ -6,26 +6,12 @@
  * @author  saggi <saggi@gmx.de>
  */
 
-use dokuwiki\plugin\dwtimeline\support\support;
-
-class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugin
+class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtimeline
 {
     /** @inheritDoc */
     public function getType()
     {
         return 'plugin_dwtimeline_milestone';
-    }
-
-    /** @inheritDoc */
-    public function getPType()
-    {
-        return 'stack';
-    }
-
-    /** @inheritDoc */
-    public function getSort()
-    {
-        return 400;
     }
 
     function accepts($mode) {
@@ -67,13 +53,11 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        $data = [];
         switch ($state) {
             case DOKU_LEXER_ENTER :
                 $match = trim(substr($match, 10,-1));// returns match between <milestone(10) and >(-1)
-                $data = support::getTitleMatches($match, 'title');
-                global $align;
-                $data['align'] = $align;
+                $data = $this->getTitleMatches($match);
+                $data['align'] = parent::$align;
                 return array($state,$data);
             case DOKU_LEXER_UNMATCHED :
                 return array($state,$match);
@@ -94,29 +78,28 @@ class syntax_plugin_dwtimeline_milestone extends \dokuwiki\Extension\SyntaxPlugi
     public function render($mode, Doku_Renderer $renderer, $data)
     {
         if ($mode == 'xhtml') {
-            global $direction;
-            if (!$direction) {$direction='tl-'.$this->getConf('direction');}
+            if (!parent::$direction) {parent::$direction = $this->GetDirection();}
             list($state,$indata) = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER :
-                    $renderer->doc .= '<div class="container-'.$indata['align'].' '.$direction.'"'.$indata['data'].$indata['style'].'>'. DOKU_LF;
+                    $renderer->doc .= '<div class="container-' . $indata['align'] . ' ' . parent::$direction . '"' . $indata['data'] . $indata['style'] . '>' . DOKU_LF;
                     $renderer->doc .= '<div class="tlcontent">'. DOKU_LF;
                     if (isset($indata['title'])) {
                         if (isset($indata['link'])) {
-                            $renderer->doc .= '<div class="mstitle">'.$this->render_text('[['.$indata['link'].'|'.$indata['title'].']]').'</div>'. DOKU_LF;
+                            $renderer->doc .= '<div class="mstitle">' . $this->render_text('[[' . $indata['link'] . '|' . $indata['title'] . ']]') . '</div>' . DOKU_LF;
                         } else {
-                            $renderer->doc .= '<div class="mstitle">'.$indata['title'].'</div>'. DOKU_LF;
+                            $renderer->doc .= '<div class="mstitle">' . $indata['title'] . '</div>' . DOKU_LF;
                         }
                     }
-                    if (isset($indata['description'])) {$renderer->doc .= '<div class="msdesc">'.$indata['description'].'</div>'. DOKU_LF;}
+                    if (isset($indata['description'])) {$renderer->doc .= '<div class="msdesc">'  .$indata['description'] . '</div>' . DOKU_LF;}
                     break;
                 case DOKU_LEXER_UNMATCHED :
                     $renderer->doc .= $renderer->cdata($indata);
                     break;
                 case DOKU_LEXER_EXIT :
-                    $renderer->doc .= '</div>'. DOKU_LF;
-                    $renderer->doc .= '</div>'. DOKU_LF;
-                    $direction = support::getDirection($direction);
+                    $renderer->doc .= '</div>' . DOKU_LF;
+                    $renderer->doc .= '</div>' . DOKU_LF;
+                    parent::$direction = $this->ChangeDirection(parent::$direction);
                     break;
             }
             return true;
