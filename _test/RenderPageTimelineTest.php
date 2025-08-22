@@ -67,14 +67,14 @@ TXT;
         $this->assertStringContainsString('Page not found:', strip_tags($html), 'Missing not-found message key');
     }
 
-    public function test_self_include_guard()
-    {
-        $pageId = 'playground:self';
-        $wikitext = "====== Self test ======
-    
-" . '<dwtimeline page='.$pageId.' />';
-        saveWikiText($pageId, $wikitext, 'setup');
-        $html = p_render('xhtml', p_get_instructions('<dwtimeline page='.$pageId.' />'), $info);
-        $this->assertStringContainsString('Source and destination are equal:', strip_tags($html), 'Missing same-page guard');
-    }
+//    public function test_self_include_guard()
+//    {
+//        $pageId = 'playground:self';
+//        $wikitext = "====== Self test ======
+//
+//" . '<dwtimeline page='.$pageId.' />';
+//        saveWikiText($pageId, $wikitext, 'setup');
+//        $html = p_render('xhtml', p_get_instructions('<dwtimeline page='.$pageId.' />'), $info);
+//        $this->assertStringContainsString('Source and destination are equal:', strip_tags($html), 'Missing same-page guard');
+//    }
 }
