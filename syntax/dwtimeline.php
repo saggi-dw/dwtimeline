@@ -7,6 +7,7 @@
  */
 
 use dokuwiki\Extension\SyntaxPlugin;
+
 class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
 {
     /**
@@ -76,7 +77,7 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
      * @param string        $mode     string     output format being rendered
      * @param Doku_Renderer $renderer the current renderer object
      * @param array         $data     data created by handler()
-     * @return  boolean                 rendered correctly?
+     * @return  bool                 rendered correctly?
      */
     public function render($mode, Doku_Renderer $renderer, $data)
     {

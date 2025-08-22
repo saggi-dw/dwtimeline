@@ -14,9 +14,9 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
         return 'plugin_dwtimeline_milestone';
     }
 
-    function accepts($mode)
+    public function accepts($mode)
     {
-        if ($mode == "plugin_dwtimeline_timeline") {
+        if ($mode == 'plugin_dwtimeline_timeline') {
             return true;
         }
         return parent::accepts($mode);
@@ -25,7 +25,7 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
     /**
      * @return array Things that may be inside the syntax
      */
-    function getAllowedTypes()
+    public function getAllowedTypes()
     {
         return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs');
     }
@@ -77,7 +77,7 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
      * @param string        $mode     string     output format being rendered
      * @param Doku_Renderer $renderer the current renderer object
      * @param array         $data     data created by handler()
-     * @return  boolean                 rendered correctly?
+     * @return  bool                 rendered correctly?
      */
     public function render($mode, Doku_Renderer $renderer, $data)
     {

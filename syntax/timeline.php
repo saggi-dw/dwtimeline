@@ -12,7 +12,7 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
     /**
      * @return array Things that may be inside the syntax
      */
-    function getAllowedTypes()
+    public function getAllowedTypes()
     {
         return array('plugin_dwtimeline_milestone');
     }
@@ -71,7 +71,7 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
      * @param string        $mode     string     output format being rendered
      * @param Doku_Renderer $renderer the current renderer object
      * @param array         $data     data created by handler()
-     * @return  boolean                 rendered correctly?
+     * @return  bool                 rendered correctly?
      */
     public function render($mode, Doku_Renderer $renderer, $data)
     {

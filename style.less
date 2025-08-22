@@ -378,10 +378,10 @@
 }
 
 /* dwtimeline: error message */
-@dwtl-error-accent:  #e03131;  // Akzent (rot)
-@dwtl-error-bg:      #fff5f5;  // zartes Rot
-@dwtl-error-border:  #f2c8c8;  // helle Kontur
-@dwtl-error-text:    #7a1f1f;  // gut lesbar auf hell
+@dwtl-error-accent: #e03131; // Akzent (rot)
+@dwtl-error-bg: #fff5f5; // zartes Rot
+@dwtl-error-border: #f2c8c8; // helle Kontur
+@dwtl-error-text: #7a1f1f; // gut lesbar auf hell
 
 .plugin_dwtimeline_error {
     display: block;
@@ -395,15 +395,18 @@
     line-height: 1.45;
     font-size: 0.95em;
 
-    a { color: inherit; text-decoration: underline; }
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
 }
 
 /* dwtimeline: error message Dark Mode */
 @media (prefers-color-scheme: dark) {
     .plugin_dwtimeline_error {
-        @dwtl-dark-bg:     fadeout(@dwtl-error-accent, 85%);  // sehr transparentes Rot
+        @dwtl-dark-bg: fadeout(@dwtl-error-accent, 85%); // sehr transparentes Rot
         @dwtl-dark-border: fadeout(@dwtl-error-accent, 55%);
-        @dwtl-dark-text:   mix(#fff, @dwtl-error-accent, 85%);
+        @dwtl-dark-text: mix(#fff, @dwtl-error-accent, 85%);
 
         background: @dwtl-dark-bg;
         border-color: @dwtl-dark-border;

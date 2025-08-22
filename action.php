@@ -60,7 +60,9 @@ class action_plugin_dwtimeline extends DokuWiki_Action_Plugin
                 $skeleton .= $this->buildSkeleton('milestone', '02');
                 break;
             case 'milestone':
-                if (!$data) $data = $this->getLang('ms-data');
+                if (!$data) {
+                    $data = $this->getLang('ms-data');
+                }
                 $skeleton = '<milestone title="' . $this->getLang('ms-title') . '" description="';
                 $skeleton .= $this->getLang('ms-desc') . '" ';
                 $skeleton .= 'data="' . $data . '" backcolor="' . $this->getLang('ms-backcolor') . '">\n';
