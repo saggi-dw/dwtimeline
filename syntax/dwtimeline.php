@@ -6,7 +6,8 @@
  * @author  saggi <saggi@gmx.de>
  */
 
-class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlugin
+use dokuwiki\Extension\SyntaxPlugin;
+class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
 {
     /**
      * Global direction memory
@@ -38,11 +39,11 @@ class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlug
      * @param string $direction
      * @return string
      */
-    public function ChangeDirection(string $direction): string {
-        if($direction === 'tl-right'){
+    public function ChangeDirection(string $direction): string
+    {
+        if ($direction === 'tl-right') {
             $direction = 'tl-left';
-        }
-        else {
+        } else {
             $direction = 'tl-right';
         }
         return $direction;
@@ -50,15 +51,17 @@ class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlug
 
     public function GetDirection()
     {
-        if (!self::$direction) {self::$direction = 'tl-'.$this->getConf('direction');}
+        if (!self::$direction) {
+            self::$direction = 'tl-' . $this->getConf('direction');
+        }
         return self::$direction;
     }
 
     /**
      * Handle the match
-     * @param string $match The match of the syntax
-     * @param int $state The state of the handler
-     * @param int $pos The position in the document
+     * @param string       $match   The match of the syntax
+     * @param int          $state   The state of the handler
+     * @param int          $pos     The position in the document
      * @param Doku_Handler $handler The handler
      * @return array Data for the renderer
      */
@@ -70,9 +73,9 @@ class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlug
     /**
      * Create output
      *
-     * @param string $mode string     output format being rendered
+     * @param string        $mode     string     output format being rendered
      * @param Doku_Renderer $renderer the current renderer object
-     * @param array $data data created by handler()
+     * @param array         $data     data created by handler()
      * @return  boolean                 rendered correctly?
      */
     public function render($mode, Doku_Renderer $renderer, $data)
@@ -87,39 +90,44 @@ class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlug
      */
     public function getTitleMatches(string $match): array
     {
-        $data[] = array();
-        $titles[] = array();
+        $data[]        = [];
+        $titles[]      = [];
         $data['align'] = self::$align; // Set Standard Alignment
-        $data['data'] = '';
+        $data['data']  = '';
         $data['style'] = ' style="';
-        preg_match_all('/(?<title>\w+?\b=".*?")/',$match,$titles);
+        preg_match_all('/(?<title>\w+?\b=".*?")/', $match, $titles);
         foreach ($titles['title'] as $title) {
-            $opttitle = explode('=',$title,2);
-            switch(trim($opttitle[0]))
-            {
+            $optionvalue = sexplode('=', $title, 2, '');
+            $option      = strtolower(trim($optionvalue[0]));
+            $value       = hsc(trim($optionvalue[1], ' "'));
+            switch ($option) {
                 case 'link':
-                    $data['link'] = self::getLink(trim($opttitle[1],' "'));
+                    $data['link'] = $this->getLink($value);
                     break;
                 case 'data':
-                    $datapoint = hsc(substr(trim($opttitle[1],' "'),0,4));
-                    $data[$opttitle[0]] = ' data-point="' . $datapoint .  '" ';
+                    $datapoint     = substr($value, 0, 4);
+                    $data[$option] = ' data-point="' . $datapoint . '" ';
                     // Check if more than 2 signs present, if so set style for elliptic timeline marker
                     if (strlen($datapoint) > 2) {
-                        $data['style'] .= '--4sizewidth: 50px; --4sizeright: -29px; --4sizesmallleft40: 60px; --4sizesmallleft50: 70px; --4sizesmallleft4: -10px; --4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
+                        $data['style'] .= '--4sizewidth: 50px; --4sizeright: -29px; --4sizesmallleft40: 60px; ';
+                        $data['style'] .= '--4sizesmallleft50: 70px; --4sizesmallleft4: -10px; --4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
                     }
                     break;
                 case 'align':
-                    $data[$opttitle[0]] = self::checkValues(hsc(trim($opttitle[1],' "')),array('horz', 'vert') , self::$align);
+                    $data[$option] = $this->checkValues($value, array('horz', 'vert'), self::$align);
                     break;
                 case 'backcolor':
-                    if(!self::isValidColor(hsc(trim($opttitle[1],' "')))) { break;}
-                    $data['style'] .= 'background-color:' . self::isValidColor(hsc(trim($opttitle[1],' "'))) . '; ';
+                    $backcolor = $this->isValidColor($value);
+                    if (!$backcolor) {
+                        break;
+                    }
+                    $data['style'] .= 'background-color:' . $backcolor . '; ';
                     break;
                 case 'style':
                     // do not accept custom styles at the moment
                     break;
                 default:
-                    $data[$opttitle[0]] = hsc(trim($opttitle[1],' "'));
+                    $data[$option] = $value;
                     break;
             }
         }
@@ -140,15 +148,15 @@ class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlug
     public function getLink(string $linkToCheck): string
     {
         $pattern = '/\[\[(?<link>.+?)\]\]/';
-        $links = [];
-        preg_match_all($pattern, $linkToCheck,$links);
+        $links   = [];
+        preg_match_all($pattern, $linkToCheck, $links);
         foreach ($links['link'] as $link) {
-            return hsc(substr($link,0,strpos($link,'|')));
+            return hsc(substr($link, 0, strpos($link, '|')));
         }
         return '';
     }
 
-    public function checkValues($toCheck,$allowed,$standard)
+    public function checkValues($toCheck, $allowed, $standard)
     {
         if (in_array($toCheck, $allowed, true)) {
             return $toCheck;
@@ -162,168 +170,168 @@ class syntax_plugin_dwtimeline_dwtimeline extends \dokuwiki\Extension\SyntaxPlug
      * this is cut price validation - only to ensure the basic format is correct and there is nothing harmful
      * three basic formats  "colorname", "#fff[fff]", "rgb(255[%],255[%],255[%])"
      */
-    Public function isValidColor($color)
+    public function isValidColor($color)
     {
-        $color = trim($color);
-        $color_names = array(
-            "AliceBlue",
-            "AntiqueWhite",
-            "Aqua",
-            "Aquamarine",
-            "Azure",
-            "Beige",
-            "Bisque",
-            "Black",
-            "BlanchedAlmond",
-            "Blue",
-            "BlueViolet",
-            "Brown",
-            "BurlyWood",
-            "CadetBlue",
-            "Chartreuse",
-            "Chocolate",
-            "Coral",
-            "CornflowerBlue",
-            "Cornsilk",
-            "Crimson",
-            "Cyan",
-            "DarkBlue",
-            "DarkCyan",
-            "DarkGoldenRod",
-            "DarkGray",
-            "DarkGrey",
-            "DarkGreen",
-            "DarkKhaki",
-            "DarkMagenta",
-            "DarkOliveGreen",
-            "DarkOrange",
-            "DarkOrchid",
-            "DarkRed",
-            "DarkSalmon",
-            "DarkSeaGreen",
-            "DarkSlateBlue",
-            "DarkSlateGray",
-            "DarkSlateGrey",
-            "DarkTurquoise",
-            "DarkViolet",
-            "DeepPink",
-            "DeepSkyBlue",
-            "DimGray",
-            "DimGrey",
-            "DodgerBlue",
-            "FireBrick",
-            "FloralWhite",
-            "ForestGreen",
-            "Fuchsia",
-            "Gainsboro",
-            "GhostWhite",
-            "Gold",
-            "GoldenRod",
-            "Gray",
-            "Grey",
-            "Green",
-            "GreenYellow",
-            "HoneyDew",
-            "HotPink",
-            "IndianRed",
-            "Indigo",
-            "Ivory",
-            "Khaki",
-            "Lavender",
-            "LavenderBlush",
-            "LawnGreen",
-            "LemonChiffon",
-            "LightBlue",
-            "LightCoral",
-            "LightCyan",
-            "LightGoldenRodYellow",
-            "LightGray",
-            "LightGrey",
-            "LightGreen",
-            "LightPink",
-            "LightSalmon",
-            "LightSeaGreen",
-            "LightSkyBlue",
-            "LightSlateGray",
-            "LightSlateGrey",
-            "LightSteelBlue",
-            "LightYellow",
-            "Lime",
-            "LimeGreen",
-            "Linen",
-            "Magenta",
-            "Maroon",
-            "MediumAquaMarine",
-            "MediumBlue",
-            "MediumOrchid",
-            "MediumPurple",
-            "MediumSeaGreen",
-            "MediumSlateBlue",
-            "MediumSpringGreen",
-            "MediumTurquoise",
-            "MediumVioletRed",
-            "MidnightBlue",
-            "MintCream",
-            "MistyRose",
-            "Moccasin",
-            "NavajoWhite",
-            "Navy",
-            "OldLace",
-            "Olive",
-            "OliveDrab",
-            "Orange",
-            "OrangeRed",
-            "Orchid",
-            "PaleGoldenRod",
-            "PaleGreen",
-            "PaleTurquoise",
-            "PaleVioletRed",
-            "PapayaWhip",
-            "PeachPuff",
-            "Peru",
-            "Pink",
-            "Plum",
-            "PowderBlue",
-            "Purple",
-            "RebeccaPurple",
-            "Red",
-            "RosyBrown",
-            "RoyalBlue",
-            "SaddleBrown",
-            "Salmon",
-            "SandyBrown",
-            "SeaGreen",
-            "SeaShell",
-            "Sienna",
-            "Silver",
-            "SkyBlue",
-            "SlateBlue",
-            "SlateGray",
-            "SlateGrey",
-            "Snow",
-            "SpringGreen",
-            "SteelBlue",
-            "Tan",
-            "Teal",
-            "Thistle",
-            "Tomato",
-            "Turquoise",
-            "Violet",
-            "Wheat",
-            "White",
-            "WhiteSmoke",
-            "Yellow",
-            "YellowGreen"
-        );
+        $color      = trim($color);
+        $colornames = [
+            'AliceBlue',
+            'AntiqueWhite',
+            'Aqua',
+            'Aquamarine',
+            'Azure',
+            'Beige',
+            'Bisque',
+            'Black',
+            'BlanchedAlmond',
+            'Blue',
+            'BlueViolet',
+            'Brown',
+            'BurlyWood',
+            'CadetBlue',
+            'Chartreuse',
+            'Chocolate',
+            'Coral',
+            'CornflowerBlue',
+            'Cornsilk',
+            'Crimson',
+            'Cyan',
+            'DarkBlue',
+            'DarkCyan',
+            'DarkGoldenRod',
+            'DarkGray',
+            'DarkGrey',
+            'DarkGreen',
+            'DarkKhaki',
+            'DarkMagenta',
+            'DarkOliveGreen',
+            'DarkOrange',
+            'DarkOrchid',
+            'DarkRed',
+            'DarkSalmon',
+            'DarkSeaGreen',
+            'DarkSlateBlue',
+            'DarkSlateGray',
+            'DarkSlateGrey',
+            'DarkTurquoise',
+            'DarkViolet',
+            'DeepPink',
+            'DeepSkyBlue',
+            'DimGray',
+            'DimGrey',
+            'DodgerBlue',
+            'FireBrick',
+            'FloralWhite',
+            'ForestGreen',
+            'Fuchsia',
+            'Gainsboro',
+            'GhostWhite',
+            'Gold',
+            'GoldenRod',
+            'Gray',
+            'Grey',
+            'Green',
+            'GreenYellow',
+            'HoneyDew',
+            'HotPink',
+            'IndianRed',
+            'Indigo',
+            'Ivory',
+            'Khaki',
+            'Lavender',
+            'LavenderBlush',
+            'LawnGreen',
+            'LemonChiffon',
+            'LightBlue',
+            'LightCoral',
+            'LightCyan',
+            'LightGoldenRodYellow',
+            'LightGray',
+            'LightGrey',
+            'LightGreen',
+            'LightPink',
+            'LightSalmon',
+            'LightSeaGreen',
+            'LightSkyBlue',
+            'LightSlateGray',
+            'LightSlateGrey',
+            'LightSteelBlue',
+            'LightYellow',
+            'Lime',
+            'LimeGreen',
+            'Linen',
+            'Magenta',
+            'Maroon',
+            'MediumAquaMarine',
+            'MediumBlue',
+            'MediumOrchid',
+            'MediumPurple',
+            'MediumSeaGreen',
+            'MediumSlateBlue',
+            'MediumSpringGreen',
+            'MediumTurquoise',
+            'MediumVioletRed',
+            'MidnightBlue',
+            'MintCream',
+            'MistyRose',
+            'Moccasin',
+            'NavajoWhite',
+            'Navy',
+            'OldLace',
+            'Olive',
+            'OliveDrab',
+            'Orange',
+            'OrangeRed',
+            'Orchid',
+            'PaleGoldenRod',
+            'PaleGreen',
+            'PaleTurquoise',
+            'PaleVioletRed',
+            'PapayaWhip',
+            'PeachPuff',
+            'Peru',
+            'Pink',
+            'Plum',
+            'PowderBlue',
+            'Purple',
+            'RebeccaPurple',
+            'Red',
+            'RosyBrown',
+            'RoyalBlue',
+            'SaddleBrown',
+            'Salmon',
+            'SandyBrown',
+            'SeaGreen',
+            'SeaShell',
+            'Sienna',
+            'Silver',
+            'SkyBlue',
+            'SlateBlue',
+            'SlateGray',
+            'SlateGrey',
+            'Snow',
+            'SpringGreen',
+            'SteelBlue',
+            'Tan',
+            'Teal',
+            'Thistle',
+            'Tomato',
+            'Turquoise',
+            'Violet',
+            'Wheat',
+            'White',
+            'WhiteSmoke',
+            'Yellow',
+            'YellowGreen'
+        ];
 
-        if (in_array(strtolower($color), array_map('strtolower',$color_names))) {
-            return trim($color);
+        if (in_array(strtolower($color), array_map('strtolower', $colornames))) {
+            return $color;
         }
 
-        $pattern = "/^\s*(
+        $pattern = '/^\s*(
             (\#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}))|        #colorvalue
             (rgb\(([0-9]{1,3}%?,){2}[0-9]{1,3}%?\))     #rgb triplet
-            )\s*$/x";
+            )\s*$/x';
 
         if (preg_match($pattern, $color)) {
             return trim($color);

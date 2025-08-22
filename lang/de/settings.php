@@ -6,4 +6,4 @@
  */
 
 $lang['direction'] = 'Auf welcher Seite soll die Ausgabe starten? (Links[left], Rechts[right])?';
-$lang['align'] = 'Welche Standardausrichtung soll angezeigt werden (Vertikal[vert], Horizontal[horz])?';
+$lang['align']     = 'Welche Standardausrichtung soll angezeigt werden (Vertikal[vert], Horizontal[horz])?';
