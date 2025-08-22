@@ -6,4 +6,4 @@
  */
 
 $conf['direction'] = 'left';
-$conf['align']='vert';
+$conf['align']     = 'vert';
