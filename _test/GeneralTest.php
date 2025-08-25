@@ -12,7 +12,6 @@ use DokuWikiTest;
  */
 class GeneralTest extends DokuWikiTest
 {
-
     /**
      * Simple test to make sure the plugin.info.txt is in correct format
      */
@@ -61,7 +60,8 @@ class GeneralTest extends DokuWikiTest
         $this->assertEquals(
             gettype($conf),
             gettype($meta),
-            'Both ' . DOKU_PLUGIN . 'dwtimeline/conf/default.php and ' . DOKU_PLUGIN . 'dwtimeline/conf/metadata.php have to exist and contain the same keys.'
+            'Both ' . DOKU_PLUGIN . 'dwtimeline/conf/default.php and ' .
+            DOKU_PLUGIN . 'dwtimeline/conf/metadata.php have to exist and contain the same keys.'
         );
 
         if ($conf !== null && $meta !== null) {
@@ -81,6 +81,5 @@ class GeneralTest extends DokuWikiTest
                 );
             }
         }
-
     }
 }

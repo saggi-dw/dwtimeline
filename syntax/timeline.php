@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin dwtimeline (Syntax Component)
  *
@@ -8,7 +9,6 @@
 
 class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimeline
 {
-
     /**
      * @return array Things that may be inside the syntax
      */
@@ -49,15 +49,15 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
         switch ($state) {
-            case DOKU_LEXER_ENTER :
+            case DOKU_LEXER_ENTER:
                 parent::$align = $this->getConf('align');
                 $match         = trim(substr($match, 11, -1));// returns match between <dwtimeline(11) and >(-1)
                 $data          = $this->getTitleMatches($match);
                 parent::$align = $data['align'];
                 return [$state, $data];
-            case DOKU_LEXER_UNMATCHED :
+            case DOKU_LEXER_UNMATCHED:
                 return [$state, $match];
-            case DOKU_LEXER_EXIT :
+            case DOKU_LEXER_EXIT:
                 $match = trim(substr($match, 12, -1));//returns match between </dwtimeline(12) and >(-1)
                 $data  = $this->getTitleMatches($match);
                 return [$state, $data];
@@ -77,11 +77,11 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
     {
         if ($mode == 'xhtml') {
             if (!parent::$direction) {
-                parent::$direction = $this->GetDirection();
+                parent::$direction = $this->getDirection();
             }
             list($state, $indata) = $data;
             switch ($state) {
-                case DOKU_LEXER_ENTER :
+                case DOKU_LEXER_ENTER:
                     $renderer->doc .= '<div class="dwtimeline">' . DOKU_LF;
                     if ($indata['align'] === 'horz') {
                         $renderer->doc .= '<div class="timeline-' . $indata['align'] . '-line"></div>' . DOKU_LF;
@@ -100,10 +100,10 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
                         $renderer->doc .= '</div>' . DOKU_LF;
                     }
                     break;
-                case DOKU_LEXER_UNMATCHED :
+                case DOKU_LEXER_UNMATCHED:
                     $renderer->cdata($indata);
                     break;
-                case DOKU_LEXER_EXIT :
+                case DOKU_LEXER_EXIT:
                     if (isset($indata['title']) or isset($indata['description'])) {
                         $renderer->doc .= '<div class="container-' . $indata['align'] . ' tl-bottom">' . DOKU_LF;
                         $renderer->doc .= '<div class="tlcontent">' . DOKU_LF;
@@ -125,6 +125,4 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
         }
         return false;
     }
-
 }
-

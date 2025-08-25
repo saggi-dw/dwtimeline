@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin dwtimeline (Syntax Component)
  *
@@ -58,14 +59,14 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
         switch ($state) {
-            case DOKU_LEXER_ENTER :
+            case DOKU_LEXER_ENTER:
                 $match         = trim(substr($match, 10, -1));// returns match between <milestone(10) and >(-1)
                 $data          = $this->getTitleMatches($match);
                 $data['align'] = parent::$align;
                 return [$state, $data];
-            case DOKU_LEXER_UNMATCHED :
+            case DOKU_LEXER_UNMATCHED:
                 return [$state, $match];
-            case DOKU_LEXER_EXIT :
+            case DOKU_LEXER_EXIT:
                 return [$state, ''];
         }
         return [];
@@ -83,18 +84,21 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
     {
         if ($mode == 'xhtml') {
             if (!parent::$direction) {
-                parent::$direction = $this->GetDirection();
+                parent::$direction = $this->getDirection();
             }
             list($state, $indata) = $data;
             switch ($state) {
-                case DOKU_LEXER_ENTER :
-                    $renderer->doc .= '<div class="container-' . $indata['align'] . ' ' . parent::$direction . '"' . $indata['data'] . $indata['style'] . '>' . DOKU_LF;
+                case DOKU_LEXER_ENTER:
+                    $renderer->doc .= '<div class="container-' . $indata['align'] . ' ';
+                    $renderer->doc .= parent::$direction . '"' . $indata['data'] . $indata['style'] . '>' . DOKU_LF;
                     $renderer->doc .= '<div class="tlcontent">' . DOKU_LF;
                     if (isset($indata['title'])) {
                         if (isset($indata['link'])) {
-                            $renderer->doc .= '<div class="mstitle">' . $this->render_text(
-                                    '[[' . $indata['link'] . '|' . $indata['title'] . ']]'
-                                ) . '</div>' . DOKU_LF;
+                            $renderer->doc .= '<div class="mstitle">';
+                            $renderer->doc .= $this->render_text(
+                                '[[' . $indata['link'] . '|' . $indata['title'] . ']]'
+                            );
+                            $renderer->doc .= '</div>' . DOKU_LF;
                         } else {
                             $renderer->doc .= '<div class="mstitle">' . $indata['title'] . '</div>' . DOKU_LF;
                         }
@@ -103,19 +107,17 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
                         $renderer->doc .= '<div class="msdesc">' . $indata['description'] . '</div>' . DOKU_LF;
                     }
                     break;
-                case DOKU_LEXER_UNMATCHED :
+                case DOKU_LEXER_UNMATCHED:
                     $renderer->cdata($indata);
                     break;
-                case DOKU_LEXER_EXIT :
+                case DOKU_LEXER_EXIT:
                     $renderer->doc     .= '</div>' . DOKU_LF;
                     $renderer->doc     .= '</div>' . DOKU_LF;
-                    parent::$direction = $this->ChangeDirection(parent::$direction);
+                    parent::$direction = $this->changeDirection(parent::$direction);
                     break;
             }
             return true;
         }
         return false;
     }
-
 }
-

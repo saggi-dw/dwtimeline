@@ -1,4 +1,5 @@
 <?php
+
 /**
  * German language file for dwtimeline plugin
  *
@@ -21,4 +22,3 @@ $lang['rp_not_found']  = 'Seite nicht gefunden: %s';
 $lang['rp_no_acl']     = 'Keine Rechte für: %s';
 $lang['rp_same']       = 'Quelle und Ziel sind identisch: %s';
 $lang['rp_missing_id'] = 'Keine Seite angegeben!';
-

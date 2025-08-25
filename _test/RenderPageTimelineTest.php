@@ -74,7 +74,7 @@ TXT;
         saveWikiText($srcId, $wikitext, 'setup');
         $html = p_wiki_xhtml($srcId);
         $this->assertTrue(
-            strpos(strip_tags($html), 'Source and destination are equal:') !== false,
+            str_contains(strip_tags($html), 'Source and destination are equal:'),
             'Missing same-page guard'
         );
     }

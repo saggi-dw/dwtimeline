@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin dwtimeline (Action Component)
  *
@@ -8,19 +9,18 @@
 
 class action_plugin_dwtimeline extends DokuWiki_Action_Plugin
 {
-
     /**
      * Register the eventhandlers
      */
     public function register(Doku_Event_Handler $controller)
     {
-        $controller->register_hook('TOOLBAR_DEFINE', 'AFTER', $this, 'insert_button', array());
+        $controller->register_hook('TOOLBAR_DEFINE', 'AFTER', $this, 'insertButton', array());
     }
 
     /**
      * Inserts the toolbar button
      */
-    public function insert_button(Doku_Event $event, $param)
+    public function insertButton(Doku_Event $event, $param)
     {
         $event->data[] = array(
             'type'  => 'picker',
@@ -49,7 +49,6 @@ class action_plugin_dwtimeline extends DokuWiki_Action_Plugin
 
     private function buildSkeleton($skeletontype, $data = null)
     {
-        $skeleton = '';
         switch ($skeletontype) {
             case 'complete':
                 $skeleton = '<dwtimeline align="' . $this->getConf('align') . '" title="';
@@ -75,6 +74,4 @@ class action_plugin_dwtimeline extends DokuWiki_Action_Plugin
         }
         return $skeleton;
     }
-
 }
-

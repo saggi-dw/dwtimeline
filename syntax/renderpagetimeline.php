@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin dwtimeline (Syntax Component: renderpage timeline)
  * Renders <dwtimeline page=ns:page /> by reusing the plugin's own markup.
@@ -67,17 +68,17 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
     /**
      * Render metadata (references) and XHTML output.
      */
-    public function render($mode, Doku_Renderer $R, $data)
+    public function render($mode, Doku_Renderer $renderer, $data)
     {
         // --- METADATA: persist backlink/reference only here ---
         if ($mode === 'metadata') {
             global $ID;
             $target = $data['id'] ?? '';
             if ($target && $target !== $ID && page_exists($target)) {
-                if (!isset($R->meta['relation']['references'])) {
-                    $R->meta['relation']['references'] = [];
+                if (!isset($renderer->meta['relation']['references'])) {
+                    $renderer->meta['relation']['references'] = [];
                 }
-                $R->meta['relation']['references'][] = $target;
+                $renderer->meta['relation']['references'][] = $target;
             }
             return true;
         }
@@ -90,35 +91,35 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
 
         $target = $data['id'] ?? '';
         if ($target === '') {
-            $R->doc .= $this->err('rp_missing_id');
+            $renderer->doc .= $this->err('rp_missing_id');
             return true;
         }
 
         // Permission first (avoid existence leaks)
         if (auth_quickaclcheck($target) < AUTH_READ) {
-            $R->doc .= $this->err('rp_no_acl', [$target]);
+            $renderer->doc .= $this->err('rp_no_acl', [$target]);
             return true;
         }
 
         // Existence check
         if (!page_exists($target)) {
-            $R->doc .= $this->err('rp_not_found', [$target]);
+            $renderer->doc .= $this->err('rp_not_found', [$target]);
             return true;
         }
 
         // Self-include guard
         if ($target === $ID) {
-            $R->doc .= $this->err('rp_same', [$target]);
+            $renderer->doc .= $this->err('rp_same', [$target]);
             return true;
         }
 
         // Cache dependency on the source page (so changes there invalidate this page)
-        $R->info['depends']['pages'][] = $target;
+        $renderer->info['depends']['pages'][] = $target;
 
         // Read source wikitext
         $wikitext = rawWiki($target);
         if ($wikitext === null) {
-            $R->doc .= $this->err('rp_not_found', [$target]);
+            $renderer->doc .= $this->err('rp_not_found', [$target]);
             return true;
         }
 
@@ -162,10 +163,10 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
         $html = p_render('xhtml', p_get_instructions($synthetic), $info);
 
         // Output + small source link
-        $R->doc .= $html;
+        $renderer->doc .= $html;
 
-        $info2  = [];
-        $R->doc .= p_render('xhtml', p_get_instructions('[[' . $target . ']]'), $info2);
+        $info2         = [];
+        $renderer->doc .= p_render('xhtml', p_get_instructions('[[' . $target . ']]'), $info2);
 
         return true;
     }

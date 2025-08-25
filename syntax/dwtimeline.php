@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin dwtimeline (Syntax Component)
  *
@@ -40,7 +41,7 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
      * @param string $direction
      * @return string
      */
-    public function ChangeDirection(string $direction): string
+    public function changeDirection(string $direction): string
     {
         if ($direction === 'tl-right') {
             $direction = 'tl-left';
@@ -50,7 +51,7 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
         return $direction;
     }
 
-    public function GetDirection()
+    public function getDirection()
     {
         if (!self::$direction) {
             self::$direction = 'tl-' . $this->getConf('direction');
@@ -111,7 +112,8 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
                     // Check if more than 2 signs present, if so set style for elliptic timeline marker
                     if (strlen($datapoint) > 2) {
                         $data['style'] .= '--4sizewidth: 50px; --4sizeright: -29px; --4sizesmallleft40: 60px; ';
-                        $data['style'] .= '--4sizesmallleft50: 70px; --4sizesmallleft4: -10px; --4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
+                        $data['style'] .= '--4sizesmallleft50: 70'
+                            . 'px; --4sizesmallleft4: -10px; --4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
                     }
                     break;
                 case 'align':
@@ -340,6 +342,4 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
 
         return false;
     }
-
 }
-
