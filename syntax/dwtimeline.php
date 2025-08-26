@@ -8,6 +8,7 @@
  */
 
 use dokuwiki\Extension\SyntaxPlugin;
+use dokuwiki\File\PageResolver;
 
 class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
 {
@@ -69,7 +70,7 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -86,76 +87,176 @@ class syntax_plugin_dwtimeline_dwtimeline extends SyntaxPlugin
     }
 
     /**
-     * Match the options of a entity e.g. <dwtimeline opt1="value1" opt2="value2">
-     * @param string $match the cleaned option String: 'opt1="value1" opt2="value2"'
-     * @return array
+     * Match entity options like: <dwtimeline opt1="value1" opt2='value2'>
+     * Returns normalized data array used by the renderer.
      */
     public function getTitleMatches(string $match): array
     {
-        $data[]        = [];
-        $titles[]      = [];
-        $data['align'] = self::$align; // Set Standard Alignment
-        $data['data']  = '';
-        $data['style'] = ' style="';
-        preg_match_all('/(?<title>\w+?\b=".*?")/', $match, $titles);
-        foreach ($titles['title'] as $title) {
-            $optionvalue = sexplode('=', $title, 2, '');
-            $option      = strtolower(trim($optionvalue[0]));
-            $value       = hsc(trim($optionvalue[1], ' "'));
+        // defaults
+        $data = [
+            'align' => self::$align, // standard alignment
+            'data'  => '',
+            'style' => ' style="',
+        ];
+
+        $opts = $this->parseOptions($match);
+
+        foreach ($opts as $option => $rawValue) {
             switch ($option) {
                 case 'link':
-                    $data['link'] = $this->getLink($value);
+                    $data['link'] = $this->getLink($rawValue);
                     break;
+
                 case 'data':
-                    $datapoint     = substr($value, 0, 4);
-                    $data[$option] = ' data-point="' . $datapoint . '" ';
-                    // Check if more than 2 signs present, if so set style for elliptic timeline marker
+                    $datapoint    = substr($rawValue, 0, 4);
+                    $data['data'] = ' data-point="' . hsc($datapoint) . '" ';
                     if (strlen($datapoint) > 2) {
                         $data['style'] .= '--4sizewidth: 50px; --4sizeright: -29px; --4sizesmallleft40: 60px; ';
-                        $data['style'] .= '--4sizesmallleft50: 70'
-                            . 'px; --4sizesmallleft4: -10px; --4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
+                        $data['style'] .= '--4sizesmallleft50: 70px; --4sizesmallleft4: -10px; ';
+                        $data['style'] .= '--4sizewidthhorz: 50px; --4sizerighthorz: -29px; ';
                     }
                     break;
+
                 case 'align':
-                    $data[$option] = $this->checkValues($value, array('horz', 'vert'), self::$align);
+                    $data['align'] = $this->checkValues($rawValue, ['horz', 'vert'], self::$align);
                     break;
+
                 case 'backcolor':
-                    $backcolor = $this->isValidColor($value);
-                    if (!$backcolor) {
-                        break;
+                    if ($c = $this->isValidColor($rawValue)) {
+                        $data['style'] .= 'background-color:' . $c . '; ';
                     }
-                    $data['style'] .= 'background-color:' . $backcolor . '; ';
                     break;
+
                 case 'style':
                     // do not accept custom styles at the moment
                     break;
+
                 default:
-                    $data[$option] = $value;
+                    // generic attributes (e.g., title)
+                    $data[$option] = hsc($rawValue); // HTML-escape for output later
                     break;
             }
         }
-        // Clear $data['style'] if no special style needed
-        if ($data['style'] == ' style="') {
-            $data['style'] = '';
-        } else {
-            $data['style'] .= '"';
-        }
+
+        // close style if something was added
+        $data['style'] = ($data['style'] === ' style="') ? '' : $data['style'] . '"';
+
         return $data;
     }
 
     /**
-     * Check and get the link from given DokuWiki Link
-     * @param string $linkToCheck
-     * @return string
+     * Parse HTML-like attributes from a string.
+     * Supports: key="val", key='val', key=val (unquoted), with \" and \\ in "..."
+     * Note: PREG_UNMATCHED_AS_NULL requires PHP 7.2+.
      */
-    public function getLink(string $linkToCheck): string
+    private function parseOptions(string $s): array
     {
-        $pattern = '/\[\[(?<link>.+?)\]\]/';
-        $links   = [];
-        preg_match_all($pattern, $linkToCheck, $links);
-        foreach ($links['link'] as $link) {
-            return hsc(substr($link, 0, strpos($link, '|')));
+        $out = [];
+        $i   = 0;
+        $len = strlen($s);
+
+        $pattern = '/\G\s*(?P<name>[a-zA-Z][\w-]*)\s*'
+            . '(?:=\s*(?:"(?P<dq>(?:[^"\\\\]|\\\\.)*)"'
+            . '|\'(?P<sq>(?:[^\'\\\\]|\\\\.)*)\''
+            . '|\[\[(?P<br>.+?)\]\]'
+            . '|(?P<uq>[^\s"\'=<>`]+)))?'
+            . '/A';
+
+        while ($i < $len) {
+            if (!preg_match($pattern, $s, $m, PREG_UNMATCHED_AS_NULL, $i)) {
+                break;
+            }
+            $i += strlen($m[0]);
+
+            $name = strtolower($m['name']);
+            $raw  = $m['dq'] ?? $m['sq'] ?? ($m['br'] !== null ? '[[' . $m['br'] . ']]' : null) ?? $m['uq'] ?? '';
+            if ($m['dq'] !== null || $m['sq'] !== null) {
+                $raw = stripcslashes($raw); // \" und \\ in quoted Werten ent-escapen
+            }
+            $out[$name] = $raw;
         }
+        return $out;
+    }
+
+    /**
+     * Return the first link target found in the given wiki text.
+     * Supports internal links [[id|label]], external links (bare or bracketed),
+     * interwiki, mailto and Windows share. Returns a normalized target:
+     * - internal: absolute page id, incl. optional "#section"
+     * - external: absolute URL (http/https/ftp)
+     * - email:    mailto:<addr>
+     * - share:    \\server\share\path
+     * Returns '' if none found.
+     */
+    public function getLink(string $wikitext): string
+    {
+        $ins = p_get_instructions($wikitext);
+        if (!$ins) {
+            return '';
+        }
+
+        global $ID;
+        $resolver = new PageResolver($ID);
+
+        foreach ($ins as $node) {
+            $type = $node[0];
+            // INTERNAL WIKI LINK [[ns:page#section|label]]
+            if ($type === 'internallink') {
+                $raw = $node[1][0] ?? '';
+                if ($raw === '') {
+                    continue;
+                }
+
+                $anchor = '';
+                if (strpos($raw, '#') !== false) {
+                    [$rawId, $sec] = explode('#', $raw, 2);
+                    $raw    = trim($rawId);
+                    $anchor = '#' . trim($sec);
+                } else {
+                    $raw = trim($raw);
+                }
+
+                $abs = $resolver->resolveId(cleanID($raw));
+                return $abs . $anchor;
+            }
+
+            // EXTERNAL LINK (bare URL or [[http(s)/ftp://...|label]])
+            if ($type === 'externallink') {
+                // payload can be scalar or array depending on DW version
+                $url = is_array($node[1]) ? (string)($node[1][0] ?? '') : (string)$node[1];
+                return trim($url);
+            }
+
+            // INTERWIKI [[wp>Foo]] etc. – return the canonical "prefix>page"
+            if ($type === 'interwikilink') {
+                $raw = $node[1][0] ?? '';
+                if ($raw === '') {
+                    continue;
+                }
+                return $raw;
+            }
+
+            // EMAIL
+            if ($type === 'emaillink') {
+                $addr = is_array($node[1]) ? (string)($node[1][0] ?? '') : (string)$node[1];
+                return 'mailto:' . trim($addr);
+            }
+
+            // WINDOWS SHARE
+            if ($type === 'windowssharelink') {
+                $path = is_array($node[1]) ? (string)($node[1][0] ?? '') : (string)$node[1];
+                return trim($path);
+            }
+        }
+
+        // Fallback: detect bare URL or email if no instruction was emitted
+        if (preg_match('/\b(?:https?|ftp):\/\/\S+/i', $wikitext, $m)) {
+            return rtrim($m[0], '.,);');
+        }
+        if (preg_match('/^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$/', trim($wikitext), $m)) {
+            return 'mailto:' . $m[0];
+        }
+
         return '';
     }
 

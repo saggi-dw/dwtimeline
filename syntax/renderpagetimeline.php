@@ -190,15 +190,33 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
     }
 
     /**
-     * Pretty-print a page id for human-readable display.
+     * Return a human-friendly page title for $id.
+     * 1) metadata title
+     * 2) first heading (if available)
+     * 3) pretty formatted ID with namespaces (e.g. "Ns › Sub › Page")
      */
     private function prettyId(string $id): string
     {
+        // 1) meta title, if exist
+        $metaTitle = p_get_metadata($id, 'title');
+        if (is_string($metaTitle) && $metaTitle !== '') {
+            return $metaTitle;
+        }
+
+        // 2) First header
+        if (function_exists('p_get_first_heading')) {
+            $h = p_get_first_heading($id);
+            if (is_string($h) && $h !== '') {
+                return $h;
+            }
+        }
+
+        // 3) fallback: path to page
         $parts = explode(':', $id);
-        $parts = array_map(function ($p) {
+        foreach ($parts as &$p) {
             $p = str_replace('_', ' ', $p);
-            return mb_convert_case($p, MB_CASE_TITLE, 'UTF-8');
-        }, $parts);
+            $p = mb_convert_case($p, MB_CASE_TITLE, 'UTF-8');
+        }
         return implode(' › ', $parts);
     }
 
@@ -220,7 +238,7 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
         string $align
     ): string {
         $len       = strlen($wikitext); // byte-based; header positions are byte offsets
-        $synthetic = '<dwtimeline align="' . hsc($align) . '" title="' . hsc($title) . '">' . DOKU_LF;
+        $synthetic = '<dwtimeline align="' . $align . '" title=' . $this->quoteAttrForWiki($title) . '>' . DOKU_LF;
 
         $count = count($headers);
         for ($i = 0; $i < $count; $i++) {
@@ -231,8 +249,10 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
 
             // If positions are not available, we cannot safely cut body text; emit empty content
             if (!isset($h['pos']) || $h['pos'] < 0) {
-                $synthetic .= '<milestone title="' . hsc(trim((string)$h['text'])) . '" data="' . $i . '">' . DOKU_LF
-                    . '</milestone>' . DOKU_LF;
+                $synthetic .= '<milestone title=';
+                $synthetic .= $this->quoteAttrForWiki((string)$h['text']);
+                $synthetic .= ' data="' . $i . '">' . DOKU_LF;
+                $synthetic .= '</milestone>' . DOKU_LF;
                 continue;
             }
 
@@ -256,13 +276,34 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
             $section = $this->cutSection($wikitext, $start, $end);
 
             // Emit milestone with title attribute and body content
-            $synthetic .= '<milestone title="' . hsc(trim((string)$h['text'])) . '" data="' . $i . '">' . DOKU_LF
-                . $section . DOKU_LF
-                . '</milestone>' . DOKU_LF;
+            $synthetic .= '<milestone title=';
+            $synthetic .= $this->quoteAttrForWiki((string)$h['text']);
+            $synthetic .= ' data="' . $i . '">' . DOKU_LF;
+            $synthetic .= $section . DOKU_LF;
+            $synthetic .= '</milestone>' . DOKU_LF;
         }
 
         $synthetic .= '</dwtimeline>' . DOKU_LF;
         return $synthetic;
+    }
+
+    /**
+     * Quote a value for wiki-style plugin attributes.
+     * Prefers "..." if possible, then '...'. If both quote types occur,
+     * wrap with " and escape inner \" and \\ (the parser will unescape them).
+     */
+    private function quoteAttrForWiki(string $val): string
+    {
+        if (strpos($val, '"') === false) {
+            return '"' . $val . '"';
+        }
+        if (strpos($val, "'") === false) {
+            return "'" . $val . "'";
+        }
+
+        // contains both ' and " -> escape for double-quoted
+        $escaped = str_replace(['\\', '"'], ['\\\\', '\\"'], $val);
+        return '"' . $escaped . '"';
     }
 
     /**
@@ -292,7 +333,6 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
 
     /**
      * Cut a section [start, end) from $text and rtrim it on the right side.
-     * Note: $start/$end are byte offsets (keep substr, not mb_substr).
      */
     private function cutSection(string $text, int $start, int $end): string
     {

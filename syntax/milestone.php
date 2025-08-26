@@ -37,7 +37,8 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
      */
     public function connectTo($mode)
     {
-        $this->Lexer->addEntryPattern('<milestone\b.*?>(?=.*?</milestone>)', $mode, 'plugin_dwtimeline_milestone');
+        $pattern = '<milestone\b(?:[^>"\']+|"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\')*>(?=.*?\</milestone>)';
+        $this->Lexer->addEntryPattern($pattern, $mode, 'plugin_dwtimeline_milestone');
     }
 
     /**
@@ -45,7 +46,7 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
      */
     public function postConnect()
     {
-        $this->Lexer->addExitPattern('</milestone>', 'plugin_dwtimeline_milestone');
+        $this->Lexer->addExitPattern('</milestone\>', 'plugin_dwtimeline_milestone');
     }
 
     /**
@@ -93,12 +94,18 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
                     $renderer->doc .= parent::$direction . '"' . $indata['data'] . $indata['style'] . '>' . DOKU_LF;
                     $renderer->doc .= '<div class="tlcontent">' . DOKU_LF;
                     if (isset($indata['title'])) {
-                        if (isset($indata['link'])) {
-                            $renderer->doc .= '<div class="mstitle">';
-                            $renderer->doc .= $this->render_text(
-                                '[[' . $indata['link'] . '|' . $indata['title'] . ']]'
-                            );
-                            $renderer->doc .= '</div>' . DOKU_LF;
+                        if (!empty($indata['link'])) {
+                            // get back raw title-value
+                            $label = htmlspecialchars_decode($indata['title'], ENT_QUOTES);
+
+                            // create link with label
+                            $wikilink = '[[' . $indata['link'] . '|' . $label . ']]';
+
+                            // render link
+                            $info          = [];
+                            $renderer->doc .= '<div class="mstitle">'
+                                . p_render('xhtml', p_get_instructions($wikilink), $info)
+                                . '</div>' . DOKU_LF;
                         } else {
                             $renderer->doc .= '<div class="mstitle">' . $indata['title'] . '</div>' . DOKU_LF;
                         }
