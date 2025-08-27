@@ -7,44 +7,48 @@
  * @author  saggi <saggi@gmx.de>
  */
 
-class action_plugin_dwtimeline extends DokuWiki_Action_Plugin
+use dokuwiki\Extension\ActionPlugin;
+use dokuwiki\Extension\Event;
+use dokuwiki\Extension\EventHandler;
+
+class action_plugin_dwtimeline extends ActionPlugin
 {
     /**
      * Register the eventhandlers
      */
-    public function register(Doku_Event_Handler $controller)
+    public function register(EventHandler $controller)
     {
-        $controller->register_hook('TOOLBAR_DEFINE', 'AFTER', $this, 'insertButton', array());
+        $controller->register_hook('TOOLBAR_DEFINE', 'AFTER', $this, 'insertButton', []);
     }
 
     /**
      * Inserts the toolbar button
      */
-    public function insertButton(Doku_Event $event, $param)
+    public function insertButton(Event $event, $param)
     {
-        $event->data[] = array(
+        $event->data[] = [
             'type'  => 'picker',
             'title' => $this->getLang('tl-picker'),
             'icon'  => '../../plugins/dwtimeline/icons/timeline_picker.png',
-            'list'  => array(
-                array(
+            'list'  => [
+                [
                     'type'   => 'format',
                     'title'  => $this->getLang('tl-button'),
                     'icon'   => '../../plugins/dwtimeline/icons/timeline_marker.png',
                     'open'   => $this->buildSkeleton('complete'),
                     'sample' => $this->getLang('ms-content'),
                     'close'  => '\n</milestone>\n</dwtimeline title="' . $this->getLang('tl-end') . '">',
-                ),
-                array(
+                ],
+                [
                     'type'   => 'format',
                     'title'  => $this->getLang('ms-button'),
                     'icon'   => '../../plugins/dwtimeline/icons/page_white_code.png',
                     'open'   => $this->buildSkeleton('milestone'),
                     'sample' => $this->getLang('ms-content'),
                     'close'  => '\n</milestone>',
-                ),
-            )
-        );
+                ],
+            ]
+        ];
     }
 
     private function buildSkeleton($skeletontype, $data = null)
