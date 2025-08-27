@@ -4,4 +4,4 @@ email  saggi@gmx.de
 date   2023-04-19
 name   dwtimeline plugin
 desc   Provides a DokuWiki styled timeline
-url    http://www.dokuwiki.org/plugin:dwtimeline
+url    https://www.dokuwiki.org/plugin:dwtimeline

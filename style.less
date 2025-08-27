@@ -61,7 +61,7 @@
     width: var(--4sizewidth);
     height: 25px;
     right: var(--4sizeright);
-    font-size:1.2em;
+    font-size: 1.2em;
     font-weight: unset;
     text-align: center;
     line-height: 1.5em;
@@ -152,7 +152,7 @@
     top: 22px;
     width: 0;
     z-index: 1;
-    left: 30px;
+    left: 31px;
     border: medium solid white;
     border-width: 10px 10px 10px 0;
     border-color: transparent @ini_background_neu transparent transparent;
@@ -192,7 +192,7 @@
 }
 
 /* fix for space arround paragraph */
-.mstitle>p {
+.mstitle > p {
     margin-bottom: 0;
 }
 
@@ -200,6 +200,7 @@
 .container-vert.tl-left .tlcontent .mstitle {
     text-align: right;
 }
+
 /* right */
 .container-vert.tl-right .tlcontent .mstitle {
     text-align: left;
@@ -244,7 +245,7 @@
     position: absolute;
     width: var(--4sizewidthhorz);
     height: 20px;
-    font-size:1em;
+    font-size: 1em;
     font-weight: unset;
     text-align: center;
     line-height: 20px;
@@ -373,5 +374,42 @@
 
     .container-vert.tl-bottom::after {
         left: 20px;
+    }
+}
+
+/* dwtimeline: error message */
+@dwtl-error-accent: #e03131; // Akzent (rot)
+@dwtl-error-bg: #fff5f5; // zartes Rot
+@dwtl-error-border: #f2c8c8; // helle Kontur
+@dwtl-error-text: #7a1f1f; // gut lesbar auf hell
+
+.plugin_dwtimeline_error {
+    display: block;
+    margin: 0.8em 0;
+    padding: 0.75em 0.9em;
+    background: @dwtl-error-bg;
+    color: @dwtl-error-text;
+    border: 1px solid @dwtl-error-border;
+    border-left: 4px solid @dwtl-error-accent;
+    border-radius: 4px;
+    line-height: 1.45;
+    font-size: 0.95em;
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
+/* dwtimeline: error message Dark Mode */
+@media (prefers-color-scheme: dark) {
+    .plugin_dwtimeline_error {
+        @dwtl-dark-bg: fadeout(@dwtl-error-accent, 85%); // sehr transparentes Rot
+        @dwtl-dark-border: fadeout(@dwtl-error-accent, 55%);
+        @dwtl-dark-text: mix(#fff, @dwtl-error-accent, 85%);
+
+        background: @dwtl-dark-bg;
+        border-color: @dwtl-dark-border;
+        color: @dwtl-dark-text;
     }
 }
