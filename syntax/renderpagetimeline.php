@@ -42,7 +42,7 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends syntax_plugin_dwtimeli
             $raw = '';
         }
 
-        $id = cleanID((string)$raw);
+        $id = cleanID($raw);
 
         global $ID;
         $resolver = new PageResolver($ID);
@@ -135,12 +135,12 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends syntax_plugin_dwtimeli
                 break;
             }
         }
-        if ($titleHdr === null && !empty($headers)) {
+        if ($titleHdr === null && $headers !== []) {
             $titleHdr = $headers[0];
         }
 
         $title      = $titleHdr ? trim($titleHdr['text']) : $this->prettyId($target);
-        $titleLevel = $titleHdr ? (int)$titleHdr['level'] : 1;
+        $titleLevel = $titleHdr ? $titleHdr['level'] : 1;
         $milLevel   = $titleLevel + 1;
 
         // Build synthetic <dwtimeline> markup using existing plugin tags

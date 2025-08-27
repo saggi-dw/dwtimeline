@@ -28,7 +28,7 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
      */
     public function getAllowedTypes()
     {
-        return array('container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs');
+        return ['container', 'formatting', 'substition', 'protected', 'disabled', 'paragraphs'];
     }
 
     /**
@@ -87,7 +87,7 @@ class syntax_plugin_dwtimeline_milestone extends syntax_plugin_dwtimeline_dwtime
             if (!parent::$direction) {
                 parent::$direction = $this->getDirection();
             }
-            list($state, $indata) = $data;
+            [$state, $indata] = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER:
                     $renderer->doc .= '<div class="container-' . $indata['align'] . ' ';

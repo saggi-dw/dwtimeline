@@ -14,7 +14,7 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
      */
     public function getAllowedTypes()
     {
-        return array('plugin_dwtimeline_milestone');
+        return ['plugin_dwtimeline_milestone'];
     }
 
     /**
@@ -79,7 +79,7 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
             if (!parent::$direction) {
                 parent::$direction = $this->getDirection();
             }
-            list($state, $indata) = $data;
+            [$state, $indata] = $data;
             switch ($state) {
                 case DOKU_LEXER_ENTER:
                     $renderer->doc .= '<div class="dwtimeline">' . DOKU_LF;
@@ -87,7 +87,7 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
                         $renderer->doc .= '<div class="timeline-' . $indata['align'] . '-line"></div>' . DOKU_LF;
                     }
                     $renderer->doc .= '<div class="timeline-' . $indata['align'] . '">' . DOKU_LF;
-                    if (isset($indata['title']) or isset($indata['description'])) {
+                    if (isset($indata['title']) || isset($indata['description'])) {
                         $renderer->doc .= '<div class="container-' . $indata['align'] . ' tl-top">' . DOKU_LF;
                         $renderer->doc .= '<div class="tlcontent">' . DOKU_LF;
                         if (isset($indata['title'])) {
@@ -104,7 +104,7 @@ class syntax_plugin_dwtimeline_timeline extends syntax_plugin_dwtimeline_dwtimel
                     $renderer->cdata($indata);
                     break;
                 case DOKU_LEXER_EXIT:
-                    if (isset($indata['title']) or isset($indata['description'])) {
+                    if (isset($indata['title']) || isset($indata['description'])) {
                         $renderer->doc .= '<div class="container-' . $indata['align'] . ' tl-bottom">' . DOKU_LF;
                         $renderer->doc .= '<div class="tlcontent">' . DOKU_LF;
                         if (isset($indata['title'])) {
