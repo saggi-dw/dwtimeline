@@ -8,24 +8,13 @@
  * @author  saggi
  */
 
-use dokuwiki\Extension\SyntaxPlugin;
 use dokuwiki\File\PageResolver;
 
-class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
+class syntax_plugin_dwtimeline_renderpagetimeline extends syntax_plugin_dwtimeline_dwtimeline
 {
-    public function getType()
-    {
-        return 'substition';
-    }
-
     public function getPType()
     {
         return 'block';
-    }
-
-    public function getSort()
-    {
-        return 400;
     }
 
     /**
@@ -34,7 +23,7 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
     public function connectTo($mode)
     {
         $this->Lexer->addSpecialPattern(
-            '<dwtimeline\s+page\s*=\s*(?:"[^"]*"|[^\s/>]+)\s*/>',
+            '<dwtimeline\s+page\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s/>]+)\s*/>',
             $mode,
             'plugin_dwtimeline_renderpagetimeline'
         );
@@ -172,55 +161,6 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
     }
 
     /**
-     * Localized error helper with ARIA for screen readers.
-     */
-    private function err(string $langKey, array $sprintfArgs = []): string
-    {
-        $txt = $this->getLang($langKey) ?? $langKey;
-        if ($sprintfArgs) {
-            $sprintfArgs = array_map('hsc', $sprintfArgs);
-            $txt         = vsprintf($txt, $sprintfArgs);
-        } else {
-            $txt = hsc($txt);
-        }
-
-        return '<div class="plugin_dwtimeline_error" role="status" aria-live="polite">'
-            . $txt
-            . '</div>';
-    }
-
-    /**
-     * Return a human-friendly page title for $id.
-     * 1) metadata title
-     * 2) first heading (if available)
-     * 3) pretty formatted ID with namespaces (e.g. "Ns › Sub › Page")
-     */
-    private function prettyId(string $id): string
-    {
-        // 1) meta title, if exist
-        $metaTitle = p_get_metadata($id, 'title');
-        if (is_string($metaTitle) && $metaTitle !== '') {
-            return $metaTitle;
-        }
-
-        // 2) First header
-        if (function_exists('p_get_first_heading')) {
-            $h = p_get_first_heading($id);
-            if (is_string($h) && $h !== '') {
-                return $h;
-            }
-        }
-
-        // 3) fallback: path to page
-        $parts = explode(':', $id);
-        foreach ($parts as &$p) {
-            $p = str_replace('_', ' ', $p);
-            $p = mb_convert_case($p, MB_CASE_TITLE, 'UTF-8');
-        }
-        return implode(' › ', $parts);
-    }
-
-    /**
      * Build the synthetic DokuWiki markup for the timeline using the plugin's own tags.
      *
      * @param string $wikitext Raw wikitext of the source page
@@ -230,7 +170,7 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
      * @param string $align    Alignment taken from plugin config
      * @return string           Complete <dwtimeline ...> ... </dwtimeline> markup
      */
-    private function buildSyntheticTimeline(
+    public function buildSyntheticTimeline(
         string $wikitext,
         array $headers,
         string $title,
@@ -285,63 +225,5 @@ class syntax_plugin_dwtimeline_renderpagetimeline extends SyntaxPlugin
 
         $synthetic .= '</dwtimeline>' . DOKU_LF;
         return $synthetic;
-    }
-
-    /**
-     * Quote a value for wiki-style plugin attributes.
-     * Prefers "..." if possible, then '...'. If both quote types occur,
-     * wrap with " and escape inner \" and \\ (the parser will unescape them).
-     */
-    private function quoteAttrForWiki(string $val): string
-    {
-        if (strpos($val, '"') === false) {
-            return '"' . $val . '"';
-        }
-        if (strpos($val, "'") === false) {
-            return "'" . $val . "'";
-        }
-
-        // contains both ' and " -> escape for double-quoted
-        $escaped = str_replace(['\\', '"'], ['\\\\', '\\"'], $val);
-        return '"' . $escaped . '"';
-    }
-
-    /**
-     * Return the index (byte offset) directly after the end of the line containing $pos.
-     */
-    private function lineEndAt(string $text, int $pos, int $len): int
-    {
-        if ($pos < 0) {
-            return 0;
-        }
-        $nl = strpos($text, "\n", $pos);
-        return ($nl === false) ? $len : ($nl + 1);
-    }
-
-    /**
-     * Return the start index (byte offset) of the line containing $pos.
-     */
-    private function lineStartAt(string $text, int $pos): int
-    {
-        if ($pos <= 0) {
-            return 0;
-        }
-        $before = substr($text, 0, $pos);
-        $nl     = strrpos($before, "\n");
-        return ($nl === false) ? 0 : ($nl + 1);
-    }
-
-    /**
-     * Cut a section [start, end) from $text and rtrim it on the right side.
-     */
-    private function cutSection(string $text, int $start, int $end): string
-    {
-        if ($start < 0) {
-            $start = 0;
-        }
-        if ($end < $start) {
-            $end = $start;
-        }
-        return rtrim(substr($text, $start, $end - $start));
     }
 }
